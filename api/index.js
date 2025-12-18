@@ -31,12 +31,9 @@ export default async function handler(req, res) {
     if (resp.ok) {
       res.status(200).json({ success: true });
     } else {
-      const errorText = await resp.text();
-      console.error('Telegram error:', errorText);
       res.status(500).json({ error: 'Failed to send Telegram message' });
     }
   } catch (e) {
-    console.error('Exception:', e);
     res.status(500).json({ error: e.message });
   }
 }

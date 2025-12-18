@@ -283,7 +283,7 @@
         try {
           await fetch('/api/notify', {
             method: 'POST',
-            headers: { 'Content-Type': text/html; charset=utf-8 },
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
             body: JSON.stringify({ sockId, contactTg, message, fileUrl })
           });
         } catch (e) { console.log('Не удалось отправить уведомление'); }
@@ -299,4 +299,5 @@
 </body>
 
 </html>
+
 

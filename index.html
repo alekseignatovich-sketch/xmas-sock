@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Рождественский носок</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabaseClient/supabaseClient-js@2"></script>
   <style>
     :root {
       --main: #e74c3c;
@@ -154,7 +154,7 @@
       if (!sockId || !ownerName) { alert('Заполни обязательные поля!'); return; }
       if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { alert('ID может содержать только буквы, цифры, _ и -'); return; }
 
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('socks')
         .insert([{
           id: sockId,
@@ -182,7 +182,7 @@
 
     // =========== ПУБЛИЧНАЯ СТРАНИЦА ===========
     async function showPublicSock(id) {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('socks')
         .select('*')
         .eq('id', id)
@@ -261,17 +261,17 @@
       if (fileInput?.files?.[0]) {
         const file = fileInput.files[0];
         const fileName = `${sockId}/${Date.now()}_${file.name}`;
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabaseClient.storage
           .from('gifts')
           .upload(fileName, file);
 
         if (uploadError) { alert('Не удалось загрузить файл'); return; }
-        const { data } = supabase.storage.from('gifts').getPublicUrl(fileName);
+        const { data } = supabaseClient.storage.from('gifts').getPublicUrl(fileName);
         fileUrl = data.publicUrl;
       }
 
       // Сохраняем подарок в БД
-      const { error: giftError } = await supabase
+      const { error: giftError } = await supabaseClient
         .from('gifts')
         .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
 
@@ -299,6 +299,7 @@
 </body>
 
 </html>
+
 
 
 

@@ -98,7 +98,7 @@
     // === ЗАМЕНИ ЭТИ ЗНАЧЕНИЯ НА СВОИ ИЗ SUPABASE ===
     const SUPABASE_URL = 'https://sb_publishable_twA_AdKUXWJJp2wdVJi69w_nOujRg_z';
     const SUPABASE_ANON_KEY = 'sb_secret_Av01MJ-0z0xrE-fZJqQgdg_cq3BNtnU';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Получаем ID из URL: /ivan → id = ivan
     const path = window.location.pathname;
@@ -299,5 +299,6 @@
 </body>
 
 </html>
+
 
 

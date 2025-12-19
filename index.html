@@ -94,15 +94,16 @@
     <h2>Загрузка...</h2>
   </div>
 </script>
-function escapeHtml(text) {
-  if (typeof text !== 'string') return '';
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+<script>
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
   <script>
     // === ЗАМЕНИ ЭТИ ЗНАЧЕНИЯ НА СВОИ ИЗ SUPABASE ===
     const SUPABASE_URL = 'https://cpuoiglvjpiuwqfqvkkw.supabase.co';
@@ -379,6 +380,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

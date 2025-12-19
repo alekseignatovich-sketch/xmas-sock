@@ -223,7 +223,7 @@
 window.currentSockId = data.id;
 window.currentContactTg = data.contact_tg || '';
 
-html += `<button onclick="submitGift(window.currentSockId, window.currentContactTg)">Отправить подарок</button>`;
+html += `<button type="button" onclick="...">Отправить подарок</button>`;
 
       // Кнопка перевода
       if (data.payment_link) {
@@ -315,6 +315,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

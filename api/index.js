@@ -1,11 +1,21 @@
 // api/index.js
 export default async function handler(req, res) {
+  // Только POST-запросы
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { contactTg, message, fileUrl, sockId } = req.body;
+  // Читаем тело запроса вручную
+  let body;
+  try {
+    body = JSON.parse(req.body);
+  } catch (e) {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
 
+  const { contactTg, message, fileUrl, sockId } = body;
+
+  // Проверка Telegram username
   if (!contactTg || !contactTg.startsWith('@')) {
     return res.status(400).json({ error: 'Invalid Telegram username' });
   }
@@ -31,9 +41,12 @@ export default async function handler(req, res) {
     if (resp.ok) {
       res.status(200).json({ success: true });
     } else {
+      const errorText = await resp.text();
+      console.error('Telegram API error:', errorText);
       res.status(500).json({ error: 'Failed to send Telegram message' });
     }
   } catch (e) {
+    console.error('Fetch error:', e);
     res.status(500).json({ error: e.message });
   }
 }

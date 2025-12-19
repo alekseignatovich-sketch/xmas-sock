@@ -238,6 +238,18 @@
 
   document.getElementById('app').innerHTML = html;
 
+    // Создаём кнопку через DOM
+const btnContainer = document.getElementById('submitBtnContainer');
+if (btnContainer) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.textContent = 'Отправить подарок';
+  btn.className = 'btn-class-if-needed'; // опционально
+  btn.onclick = () => {
+    submitGift(data.id, data.contact_tg || '');
+  };
+  btnContainer.appendChild(btn);
+}
   // Preview для изображений
   const fileInput = document.getElementById('giftFile');
   if (fileInput) {
@@ -281,7 +293,9 @@
       if (data.allow_files) {
         html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif,.pdf" /></div>`;
       }
-
+ 
+  html += `<div id="submitBtnContainer"></div>`;
+  
   // Сохраняем данные в глобальные переменные
 window.currentSockId = data.id;
 window.currentContactTg = data.contact_tg || '';
@@ -395,6 +409,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

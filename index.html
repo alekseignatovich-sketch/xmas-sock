@@ -93,7 +93,20 @@
   <div id="app">
     <h2>Загрузка...</h2>
   </div>
-function escapeHtml(text) {
+<script>
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // остальной код...
+</script>
+  function escapeHtml(text) {
   if (typeof text !== 'string') return '';
   return text
     .replace(/&/g, '&amp;')
@@ -378,6 +391,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

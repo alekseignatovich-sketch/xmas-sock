@@ -219,7 +219,11 @@
         html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif,.pdf" /></div>`;
       }
 
-      html += `<button onclick="submitGift('${data.id}', '${data.contact_tg || ''}')">Отправить подарок</button>`;
+  // Сохраняем данные в глобальные переменные
+window.currentSockId = data.id;
+window.currentContactTg = data.contact_tg || '';
+
+html += `<button onclick="submitGift(window.currentSockId, window.currentContactTg)">Отправить подарок</button>`;
 
       // Кнопка перевода
       if (data.payment_link) {
@@ -311,6 +315,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

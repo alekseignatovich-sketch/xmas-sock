@@ -325,35 +325,35 @@ html += `<button type="button" onclick="...">Отправить подарок</
 // Загрузка файла
 if (fileInput?.files?.[0]) {
   const file = fileInput.files[0];
-  const fileName = `${sockId}/${Date.now()}_${file.name}`;
+  const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
   
-  // Загружаем файл
+  // 1. Загружаем файл
   const { error: uploadError } = await supabaseClient
     .storage
     .from('gifts')
     .upload(fileName, file);
 
   if (uploadError) {
+    alert('Ошибка загрузки файла');
     console.error('Upload error:', uploadError);
-    alert('Не удалось загрузить файл');
     return;
   }
 
-  // Получаем публичный URL (асинхронно!)
-  const { data, error: urlError } = await supabaseClient
+  // 2. Получаем публичный URL
+  const { data: urlData, error: urlError } = await supabaseClient
     .storage
     .from('gifts')
     .getPublicUrl(fileName);
 
   if (urlError) {
+    alert('Ошибка получения ссылки');
     console.error('URL error:', urlError);
-    alert('Не удалось получить ссылку на файл');
     return;
   }
 
-  fileUrl = data?.publicUrl || '';
+  fileUrl = urlData?.publicUrl || '';
 }
-
+   
       // Сохраняем подарок в БД
       const { error: giftError } = await supabaseClient
         .from('gifts')
@@ -395,6 +395,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

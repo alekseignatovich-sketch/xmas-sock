@@ -262,65 +262,8 @@ if (btnContainer) {
     });
   }
       }
-
-      let html = `
-        <div class="sock-header">
-          <h2>Рождественский носок</h2>
-          <h3>для ${data.owner_name}</h3>
-      `;
-      if (data.avatar_url) {
-        html += `<img src="${data.avatar_url}" class="sock-avatar" />`;
-      }
-      html += `</div>`;
-
-      // Форма подарка
-      html += `<h3 style="margin:20px 0;">Оставь подарок!</h3>`;
-
-      if (data.allow_text) {
-        html += `<div class="form-group"><textarea id="message" placeholder="Поздравление с Новым годом и Рождеством..."></textarea></div>`;
-      }
-
-      if (data.allow_files) {
-        html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif,.pdf" /></div>`;
-      }
- 
-  html += `<div id="submitBtnContainer"></div>`;
-  
-  // Сохраняем данные в глобальные переменные
-window.currentSockId = data.id;
-window.currentContactTg = data.contact_tg || '';
-
-html += `<button type="button" onclick="...">Отправить подарок</button>`;
-
-      // Кнопка перевода
-      if (data.payment_link) {
-        html += `<a href="${data.payment_link}" target="_blank" class="payment-btn">🎁 Отправить денежный подарок</a>`;
-      }
-
-      document.getElementById('app').innerHTML = html;
-
-      // Preview для изображений
-      const fileInput = document.getElementById('giftFile');
-      if (fileInput) {
-        fileInput.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              let preview = document.getElementById('filePreview');
-              if (!preview) {
-                preview = document.createElement('img');
-                preview.id = 'filePreview';
-                preview.className = 'gift-preview';
-                fileInput.parentNode.appendChild(preview);
-              }
-              preview.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-    // =========== ОТПРАВКА ПОДАРКА ===========
+   
+  // =========== ОТПРАВКА ПОДАРКА ===========
     async function submitGift(sockId, contactTg) {
       const message = document.getElementById('message')?.value || '';
       const fileInput = document.getElementById('giftFile');
@@ -399,6 +342,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

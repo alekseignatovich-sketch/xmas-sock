@@ -277,17 +277,29 @@
 
       if (giftError) { alert('Ошибка отправки'); return; }
 
-      // Уведомление владельцу (Telegram)
-      if (contactTg) {
-        // Вызываем Edge Function (настроим далее)
-        try {
-          await fetch('/api/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/html; charset=utf-8' },
-            body: JSON.stringify({ sockId, contactTg, message, fileUrl })
-          });
-        } catch (e) { console.log('Не удалось отправить уведомление'); }
-      }
+    // Отправка уведомления в Telegram
+if (contactTg) {
+  try {
+    const response = await fetch('/api/notify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'  // ← обязательно!
+      },
+      body: JSON.stringify({
+        sockId: sockId,
+        contactTg: contactTg,
+        message: message,
+        fileUrl: fileUrl
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Ошибка уведомления:', await response.text());
+    }
+  } catch (e) {
+    console.error('Не удалось отправить уведомление', e);
+  }
+}
 
       alert('🎁 Подарок отправлен! Спасибо!');
       if (document.getElementById('message')) document.getElementById('message').value = '';
@@ -299,6 +311,7 @@
 </body>
 
 </html>
+
 
 
 

@@ -331,8 +331,8 @@ html += `<button type="button" onclick="...">Отправить подарок</
           .upload(fileName, file);
 
         if (uploadError) { alert('Не удалось загрузить файл'); return; }
-        const { data } = supabaseClient.storage.from('gifts').getPublicUrl(fileName);
-        fileUrl = data.publicUrl;
+        const { publicUrl } = supabaseClient.storage.from('gifts').getPublicUrl(fileName);
+        fileUrl = publicUrl;;
       }
 
       // Сохраняем подарок в БД
@@ -376,6 +376,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

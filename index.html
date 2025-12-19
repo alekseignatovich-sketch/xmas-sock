@@ -229,7 +229,7 @@
     html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif,.pdf" /></div>`;
   }
 
-  html += `<button type="button" onclick="submitGift('${escapeHtml(data.id)}', '${escapeHtml(data.contact_tg || '')}')">Отправить подарок</button>`;
+    html += `<button type="button" onclick="submitGift(window.sockData.id, window.sockData.contact_tg)">Отправить подарок</button>`;
 
   // Кнопка перевода
   if (data.payment_link) {
@@ -395,6 +395,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

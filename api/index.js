@@ -1,34 +1,46 @@
 // api/index.js
 export default async function handler(req, res) {
-  // Только POST-запросы
+  // Разрешаем только POST-запросы
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Читаем тело запроса вручную
+  // Читаем и парсим тело запроса
   let body;
   try {
     body = JSON.parse(req.body);
-  } catch (e) {
-    return res.status(400).json({ error: 'Invalid JSON' });
+  } catch (parseError) {
+    console.error('❌ JSON parse error:', parseError.message);
+    console.error('Raw body received:', req.body);
+    return res.status(400).json({ error: 'Invalid JSON payload' });
   }
 
-  const { contactTg, message, fileUrl, sockId } = body;
+  // Деструктуризация с безопасными значениями по умолчанию
+  const { 
+    sockId = 'unknown', 
+    contactTg = '', 
+    message = '', 
+    fileUrl = '' 
+  } = body;
 
-  // Проверка Telegram username
+  // Проверка: contactTg должен начинаться с @
   if (!contactTg || !contactTg.startsWith('@')) {
-    return res.status(400).json({ error: 'Invalid Telegram username' });
+    return res.status(400).json({ error: 'Invalid Telegram username (must start with @)' });
   }
 
+  // Получаем токен из переменных окружения
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   if (!BOT_TOKEN) {
+    console.error('❌ TELEGRAM_BOT_TOKEN is not set in environment variables');
     return res.status(500).json({ error: 'Bot token not configured' });
   }
 
+  // Формируем текст сообщения
   const text = `🎄 Тебе оставили подарок в носке "${sockId}"!\n\nСообщение: ${message || '—'}\n${fileUrl ? `Файл: ${fileUrl}` : ''}`;
-  
+
   try {
-    const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // Отправляем запрос в Telegram API
+    const telegramResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -38,15 +50,17 @@ export default async function handler(req, res) {
       })
     });
 
-    if (resp.ok) {
-      res.status(200).json({ success: true });
+    // Проверяем ответ от Telegram
+    if (telegramResponse.ok) {
+      console.log('✅ Telegram notification sent successfully');
+      return res.status(200).json({ success: true });
     } else {
-      const errorText = await resp.text();
-      console.error('Telegram API error:', errorText);
-      res.status(500).json({ error: 'Failed to send Telegram message' });
+      const errorText = await telegramResponse.text();
+      console.error('❌ Telegram API error:', errorText);
+      return res.status(500).json({ error: 'Failed to send Telegram message' });
     }
-  } catch (e) {
-    console.error('Fetch error:', e);
-    res.status(500).json({ error: e.message });
+  } catch (networkError) {
+    console.error('❌ Network error when sending to Telegram:', networkError.message);
+    return res.status(500).json({ error: 'Network error' });
   }
 }

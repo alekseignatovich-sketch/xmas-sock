@@ -322,18 +322,37 @@ html += `<button type="button" onclick="...">Отправить подарок</
       const fileInput = document.getElementById('giftFile');
       let fileUrl = '';
 
-      // Загрузка файла
-      if (fileInput?.files?.[0]) {
-        const file = fileInput.files[0];
-        const fileName = `${sockId}/${Date.now()}_${file.name}`;
-        const { error: uploadError } = await supabaseClient.storage
-          .from('gifts')
-          .upload(fileName, file);
+// Загрузка файла
+if (fileInput?.files?.[0]) {
+  const file = fileInput.files[0];
+  const fileName = `${sockId}/${Date.now()}_${file.name}`;
+  
+  // Загружаем файл
+  const { error: uploadError } = await supabaseClient
+    .storage
+    .from('gifts')
+    .upload(fileName, file);
 
-        if (uploadError) { alert('Не удалось загрузить файл'); return; }
-        const { publicUrl } = supabaseClient.storage.from('gifts').getPublicUrl(fileName);
-        fileUrl = publicUrl;;
-      }
+  if (uploadError) {
+    console.error('Upload error:', uploadError);
+    alert('Не удалось загрузить файл');
+    return;
+  }
+
+  // Получаем публичный URL (асинхронно!)
+  const { data, error: urlError } = await supabaseClient
+    .storage
+    .from('gifts')
+    .getPublicUrl(fileName);
+
+  if (urlError) {
+    console.error('URL error:', urlError);
+    alert('Не удалось получить ссылку на файл');
+    return;
+  }
+
+  fileUrl = data?.publicUrl || '';
+}
 
       // Сохраняем подарок в БД
       const { error: giftError } = await supabaseClient
@@ -376,6 +395,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

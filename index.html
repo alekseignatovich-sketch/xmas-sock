@@ -238,26 +238,6 @@
 
   document.getElementById('app').innerHTML = html;
 
-  // Форма подарка
-  html += `<h3 style="margin:20px 0;">Оставь подарок!</h3>`;
-
-  if (data.allow_text) {
-    html += `<div class="form-group"><textarea id="message" placeholder="Поздравление с Новым годом и Рождеством..."></textarea></div>`;
-  }
-
-  if (data.allow_files) {
-    html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif,.pdf" /></div>`;
-  }
-
-    html += `<div id="submitBtnContainer"></div>`;
-    
-  // Кнопка перевода
-  if (data.payment_link) {
-    html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">🎁 Отправить денежный подарок</a>`;
-  }
-
-  document.getElementById('app').innerHTML = html;
-
     // Создаём кнопку через DOM
 const btnContainer = document.getElementById('submitBtnContainer');
 if (btnContainer) {
@@ -372,6 +352,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

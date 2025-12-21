@@ -288,27 +288,27 @@
 }
    
   // =========== ОТПРАВКА ПОДАРКА ===========
-    async function submitGift(sockId, contactTg) {
-      const message = document.getElementById('message')?.value || '';
-      const fileInput = document.getElementById('giftFile');
-      let fileUrl = '';
+if (contactTg) {
+  const formData = new URLSearchParams();
+  formData.append('sockId', sockId);
+  formData.append('contactTg', contactTg);
+  formData.append('message', message);
+  formData.append('fileUrl', fileUrl);
 
-// Загрузка файла
-if (fileInput?.files?.[0]) {
-  const file = fileInput.files[0];
-  const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
-  
-  // 1. Загружаем файл
-  const { error: uploadError } = await supabaseClient
-    .storage
-    .from('gifts')
-    .upload(fileName, file);
+  try {
+    const response = await fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
 
-  if (uploadError) {
-    alert('Ошибка загрузки файла');
-    console.error('Upload error:', uploadError);
-    return;
+    if (!response.ok) {
+      console.error('Ошибка уведомления:', await response.text());
+    }
+  } catch (e) {
+    console.error('Ошибка сети:', e);
   }
+}
 
   // 2. Получаем публичный URL
   const { data: urlData, error: urlError } = await supabaseClient
@@ -368,6 +368,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

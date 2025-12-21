@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     // Отправляем запрос в Telegram API
     const telegramResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+     headers: { 'Content-Type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
         chat_id: contactTg,
         text: text,

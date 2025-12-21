@@ -109,14 +109,17 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Получаем ID из URL: /ivan → id = ivan
-    const path = window.location.pathname;
-    const id = path === '/' ? null : path.substring(1);
+const path = window.location.pathname;
+const id = path === '/' ? null : path.substring(1);
 
-    if (id && id.length > 0) {
-      showPublicSock(id);
-    } else {
-      showCreateForm();
-    }
+// Запускаем асинхронно
+(async () => {
+  if (id && id.length > 0) {
+    await showPublicSock(id);
+  } else {
+    showCreateForm();
+  }
+})();
 
     // =========== СТРАНИЦА СОЗДАНИЯ ===========
     function showCreateForm() {
@@ -368,6 +371,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

@@ -324,7 +324,7 @@ if (contactTg) {
     const response = await fetch('/api/notify', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'  // ← обязательно!
+        'Content-Type': 'application/json; charset=utf-8' // ← добавлена кодировка
       },
       body: JSON.stringify({
         sockId: sockId,
@@ -336,9 +336,11 @@ if (contactTg) {
 
     if (!response.ok) {
       console.error('Ошибка уведомления:', await response.text());
+      alert('Не удалось отправить уведомление');
     }
   } catch (e) {
-    console.error('Не удалось отправить уведомление', e);
+    console.error('Ошибка сети:', e);
+    alert('Ошибка сети');
   }
 }
 
@@ -352,6 +354,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

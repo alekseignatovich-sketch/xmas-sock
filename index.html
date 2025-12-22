@@ -349,10 +349,12 @@ const id = path === '/' ? null : path.substring(1);
 // Отправка уведомления в Telegram
 if (contactTg) {
   const payload = {
-    sockId: sockId,
-    contactTg: contactTg,
-    message: message,
-    fileUrl: fileUrl
+body: JSON.stringify({
+  sockId: sockId,
+  contactTg: contactTg,
+  message: message,
+  fileUrl: fileUrl
+})
   };
 
   // Логируем для отладки
@@ -387,6 +389,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

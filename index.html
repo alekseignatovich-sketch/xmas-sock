@@ -291,86 +291,91 @@ const id = path === '/' ? null : path.substring(1);
 }
    
   // =========== ОТПРАВКА ПОДАРКА ===========
-if (contactTg) {
-  const formData = new URLSearchParams();
-  formData.append('sockId', sockId);
-  formData.append('contactTg', contactTg);
-  formData.append('message', message);
-  formData.append('fileUrl', fileUrl);
+  // =========== ОТПРАВКА ПОДАРКА ===========
+  async function submitGift(sockId, contactTg) {
+    const message = document.getElementById('message')?.value || '';
+    const fileInput = document.getElementById('giftFile');
+    let fileUrl = '';
 
-  try {
-    const response = await fetch('/api/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData
-    });
-
-    if (!response.ok) {
-      console.error('Ошибка уведомления:', await response.text());
-    }
-  } catch (e) {
-    console.error('Ошибка сети:', e);
-  }
-}
-
-  // 2. Получаем публичный URL
-  const { data: urlData, error: urlError } = await supabaseClient
-    .storage
-    .from('gifts')
-    .getPublicUrl(fileName);
-
-  if (urlError) {
-    alert('Ошибка получения ссылки');
-    console.error('URL error:', urlError);
-    return;
-  }
-
-  fileUrl = urlData?.publicUrl || '';
-}
-   
-      // Сохраняем подарок в БД
-      const { error: giftError } = await supabaseClient
+    // Загрузка файла
+    if (fileInput?.files?.[0]) {
+      const file = fileInput.files[0];
+      const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
+      
+      // 1. Загружаем файл
+      const { error: uploadError } = await supabaseClient
+        .storage
         .from('gifts')
-        .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
+        .upload(fileName, file);
 
-      if (giftError) { alert('Ошибка отправки'); return; }
+      if (uploadError) {
+        alert('Ошибка загрузки файла');
+        console.error('Upload error:', uploadError);
+        return;
+      }
+
+      // 2. Получаем публичный URL
+      const { data: urlData, error: urlError } = await supabaseClient
+        .storage
+        .from('gifts')
+        .getPublicUrl(fileName);
+
+      if (urlError) {
+        alert('Ошибка получения ссылки');
+        console.error('URL error:', urlError);
+        return;
+      }
+
+      fileUrl = urlData?.publicUrl || '';
+    }
+     
+    // Сохраняем подарок в БД
+    const { error: giftError } = await supabaseClient
+      .from('gifts')
+      .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
+
+    if (giftError) { 
+      alert('Ошибка отправки'); 
+      return; 
+    }
 
     // Отправка уведомления в Telegram
-if (contactTg) {
-  try {
-    const response = await fetch('/api/notify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8' // ← добавлена кодировка
-      },
-      body: JSON.stringify({
-        sockId: sockId,
-        contactTg: contactTg,
-        message: message,
-        fileUrl: fileUrl
-      })
-    });
+    if (contactTg) {
+      try {
+        const response = await fetch('/api/notify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+          },
+          body: JSON.stringify({
+            sockId: sockId,
+            contactTg: contactTg,
+            message: message,
+            fileUrl: fileUrl
+          })
+        });
 
-    if (!response.ok) {
-      console.error('Ошибка уведомления:', await response.text());
-      alert('Не удалось отправить уведомление');
+        if (!response.ok) {
+          console.error('Ошибка уведомления:', await response.text());
+          alert('Не удалось отправить уведомление');
+        }
+      } catch (e) {
+        console.error('Ошибка сети:', e);
+        alert('Ошибка сети');
+      }
     }
-  } catch (e) {
-    console.error('Ошибка сети:', e);
-    alert('Ошибка сети');
+
+    alert('🎁 Подарок отправлен! Спасибо!');
+    if (document.getElementById('message')) document.getElementById('message').value = '';
+    if (fileInput) fileInput.value = '';
+    const preview = document.getElementById('filePreview');
+    if (preview) preview.remove();
   }
-}
-
-      alert('🎁 Подарок отправлен! Спасибо!');
-      if (document.getElementById('message')) document.getElementById('message').value = '';
-      if (fileInput) fileInput.value = '';
-      const preview = document.getElementById('filePreview');
-      if (preview) preview.remove();
-    }
   </script>
 </body>
 
 </html>
+
 
 
 

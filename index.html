@@ -352,13 +352,18 @@ async function submitGift(sockId, contactTg) {
 
     // Отправляем
     try {
-      const response = await fetch('/api/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        body: bodyStr // ← ТОЛЬКО СТРОКА!
-      });
+     const response = await fetch('/api/notify', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json; charset=utf-8'
+  },
+  body: JSON.stringify({
+    sockId: sockId,
+    contactTg: contactTg,
+    message: message,
+    fileUrl: fileUrl
+  })
+});
 
       if (!response.ok) {
         console.error('Ошибка уведомления:', await response.text());
@@ -379,6 +384,7 @@ async function submitGift(sockId, contactTg) {
 </body>
 
 </html>
+
 
 
 

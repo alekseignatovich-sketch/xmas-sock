@@ -299,7 +299,7 @@ async function submitGift(sockId, contactTg) {
   const fileInput = document.getElementById('giftFile');
   let fileUrl = '';
 
-  // Загрузка файла
+  // Загрузка файла (если есть)
   if (fileInput?.files?.[0]) {
     const file = fileInput.files[0];
     const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
@@ -327,26 +327,37 @@ async function submitGift(sockId, contactTg) {
     fileUrl = urlData?.publicUrl || '';
   }
 
-  // Сохраняем подарок в БД
+  // Сохранение в БД
   const { error: giftError } = await supabaseClient
     .from('gifts')
     .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
 
   if (giftError) {
-    alert('Ошибка отправки подарка');
+    alert('Ошибка отправки');
     return;
   }
 
-  // ✅ ПОЛНОСТЬЮ ПРАВИЛЬНАЯ ОТПРАВКА УВЕДОМЛЕНИЯ
+  // ✅ ОТПРАВКА УВЕДОМЛЕНИЯ — ТОЛЬКО ТАК!
   if (contactTg && contactTg.startsWith('@')) {
-    const payload = { sockId, contactTg, message, fileUrl };
-    const jsonPayload = JSON.stringify(payload); // ← КЛЮЧЕВОЙ МОМЕНТ
+    // Создаём объект
+    const payload = {
+      sockId: sockId,
+      contactTg: contactTg,
+      message: message,
+      fileUrl: fileUrl
+    };
 
+    // 🔑 ПРЕОБРАЗУЕМ В JSON-СТРОКУ
+    const bodyStr = JSON.stringify(payload);
+
+    // Отправляем
     try {
       const response = await fetch('/api/notify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
-        body: jsonPayload // ← ТОЛЬКО СТРОКА!
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: bodyStr // ← ТОЛЬКО СТРОКА!
       });
 
       if (!response.ok) {
@@ -357,7 +368,7 @@ async function submitGift(sockId, contactTg) {
     }
   }
 
-  // Сброс формы
+  // Сброс
   alert('🎁 Подарок отправлен!');
   if (document.getElementById('message')) document.getElementById('message').value = '';
   if (fileInput) fileInput.value = '';
@@ -368,6 +379,7 @@ async function submitGift(sockId, contactTg) {
 </body>
 
 </html>
+
 
 
 

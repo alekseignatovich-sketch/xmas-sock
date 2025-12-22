@@ -347,33 +347,42 @@ const id = path === '/' ? null : path.substring(1);
     }
 
 // Отправка уведомления в Telegram
-// Отправка уведомления в Telegram
-if (contactTg) {
+if (contactTg && contactTg.startsWith('@')) {
+  // Формируем данные
+  const payload = {
+    sockId: sockId,
+    contactTg: contactTg,
+    message: message,
+    fileUrl: fileUrl
+  };
+
+  // Преобразуем в JSON-строку (обязательно!)
+  const jsonPayload = JSON.stringify(payload);
+
+  // Отладка: смотри в Console браузера
+  console.log('📤 Отправляю в /api/notify:', jsonPayload);
+
   try {
     const response = await fetch('/api/notify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
       },
-      // ОБЯЗАТЕЛЬНО JSON.stringify!
-      body: JSON.stringify({
-        sockId: sockId,
-        contactTg: contactTg,
-        message: message,
-        fileUrl: fileUrl
-      })
+      body: jsonPayload // ← только строка, не объект!
     });
 
     if (!response.ok) {
-      console.error('Ошибка уведомления:', await response.text());
+      const errorText = await response.text();
+      console.error('❌ Ошибка от /api/notify:', errorText);
       alert('Не удалось отправить уведомление');
+    } else {
+      console.log('✅ Уведомление отправлено');
     }
   } catch (e) {
-    console.error('Ошибка сети:', e);
-    alert('Ошибка сети');
+    console.error('💥 Ошибка сети:', e);
+    alert('Ошибка подключения');
   }
 }
-
     alert('🎁 Подарок отправлен! Спасибо!');
     if (document.getElementById('message')) document.getElementById('message').value = '';
     if (fileInput) fileInput.value = '';
@@ -384,6 +393,7 @@ if (contactTg) {
 </body>
 
 </html>
+
 
 
 

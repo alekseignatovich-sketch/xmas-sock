@@ -1,8 +1,6 @@
 // api/index.js
-import { createReadStream } from 'fs';
 import { Readable } from 'stream';
 
-// Вспомогательная функция для чтения тела запроса
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -23,18 +21,16 @@ export default async function handler(req, res) {
 
   let body;
   try {
-    // 🔑 Читаем тело запроса в Node.js
     const text = await readBody(req);
     body = JSON.parse(text);
   } catch (e) {
-    console.error('❌ JSON parse error:', e.message);
     return res.status(400).json({ error: 'Invalid JSON' });
   }
 
   const { sockId, contactTg, message, fileUrl } = body;
 
-  if (!contactTg || typeof contactTg !== 'string' || !contactTg.startsWith('@')) {
-    return res.status(400).json({ error: 'Invalid payload' });
+  if (!contactTg || typeof contactTg !== 'string') {
+    return res.status(400).json({ error: 'Invalid contactTg' });
   }
 
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -42,26 +38,37 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Bot token not configured' });
   }
 
+  // 🔑 Определяем chat_id: username или числовой ID
+  let chat_id;
+  if (contactTg.startsWith('@')) {
+    chat_id = contactTg;
+  } else {
+    const parsedId = Number(contactTg);
+    if (isNaN(parsedId)) {
+      return res.status(400).json({ error: 'Invalid contactTg format' });
+    }
+    chat_id = parsedId;
+  }
+
   const text = `🎄 Тебе оставили подарок в носке "${sockId}"!\n\nСообщение: ${message || '—'}\n${fileUrl ? `Файл: ${fileUrl}` : ''}`;
-  
+
   try {
+    // 🔑 URL без пробелов!
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      const chat_id = contactTg.startsWith('@') ? contactTg : Number(contactTg);
-
-body: JSON.stringify({ chat_id, text })
+      body: JSON.stringify({ chat_id, text })
     });
 
-    if (telegramRes.ok) {
+    const result = await telegramRes.json();
+    if (result.ok) {
       return res.status(200).json({ success: true });
     } else {
-      const errorText = await telegramRes.text();
-      console.error('Telegram API error:', errorText);
-      return res.status(500).json({ error: 'Telegram send failed' });
+      console.error('Telegram error:', result);
+      return res.status(500).json({ error: 'Telegram send failed', details: result });
     }
   } catch (e) {
-    console.error('Network error:', e.message);
+    console.error('Network error:', e);
     return res.status(500).json({ error: 'Network error' });
   }
 }

@@ -48,7 +48,9 @@ export default async function handler(req, res) {
     const telegramRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: contactTg, text })
+      const chat_id = contactTg.startsWith('@') ? contactTg : Number(contactTg);
+
+body: JSON.stringify({ chat_id, text })
     });
 
     if (telegramRes.ok) {

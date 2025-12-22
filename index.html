@@ -352,6 +352,12 @@ async function submitGift(sockId, contactTg) {
 
     // Отправляем
     try {
+      // 🔍 ОТЛАДКА
+console.log('📤 Тип bodyStr:', typeof bodyStr);
+console.log('📤 Значение bodyStr:', bodyStr);
+console.log('📤 Валиден ли JSON:', (() => {
+  try { JSON.parse(bodyStr); return '✅ да'; } catch { return '❌ нет'; }
+})());
      const response = await fetch('/api/notify', {
   method: 'POST',
   headers: {
@@ -384,6 +390,7 @@ async function submitGift(sockId, contactTg) {
 </body>
 
 </html>
+
 
 
 

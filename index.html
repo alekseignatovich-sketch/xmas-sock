@@ -161,7 +161,10 @@ const id = path === '/' ? null : path.substring(1);
       const allowFiles = document.getElementById('allowFiles').checked;
       const paymentLink = document.getElementById('paymentLink').value.trim();
       const contactTg = document.getElementById('contactTg').value.trim();
-
+  if (contactTg && !contactTg.startsWith('@')) {
+  alert('Telegram username должен начинаться с @');
+  return;
+}
       if (!sockId || !ownerName) { alert('Заполни обязательные поля!'); return; }
       if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { alert('ID может содержать только буквы, цифры, _ и -'); return; }
 
@@ -291,8 +294,12 @@ const id = path === '/' ? null : path.substring(1);
 }
    
   // =========== ОТПРАВКА ПОДАРКА ===========
-  // =========== ОТПРАВКА ПОДАРКА ===========
   async function submitGift(sockId, contactTg) {
+      // Проверка Telegram username
+  if (!contactTg || !contactTg.trim().startsWith('@')) {
+    alert('Ошибка: укажите корректный Telegram username (начинается с @)');
+    return;
+  }
     const message = document.getElementById('message')?.value || '';
     const fileInput = document.getElementById('giftFile');
     let fileUrl = '';
@@ -375,6 +382,7 @@ const id = path === '/' ? null : path.substring(1);
 </body>
 
 </html>
+
 
 
 

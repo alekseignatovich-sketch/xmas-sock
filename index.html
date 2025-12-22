@@ -161,7 +161,6 @@ const id = path === '/' ? null : path.substring(1);
       const allowFiles = document.getElementById('allowFiles').checked;
       const paymentLink = document.getElementById('paymentLink').value.trim();
       const contactTg = document.getElementById('contactTg').value.trim();
-}
       if (!sockId || !ownerName) { alert('Заполни обязательные поля!'); return; }
       if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { alert('ID может содержать только буквы, цифры, _ и -'); return; }
 
@@ -387,6 +386,7 @@ console.log('📤 Валиден ли JSON:', (() => {
 </body>
 
 </html>
+
 
 
 

@@ -294,105 +294,81 @@ const id = path === '/' ? null : path.substring(1);
 }
    
   // =========== ОТПРАВКА ПОДАРКА ===========
-  async function submitGift(sockId, contactTg) {
-      // Проверка Telegram username
-  if (!contactTg || !contactTg.trim().startsWith('@')) {
-    alert('Ошибка: укажите корректный Telegram username (начинается с @)');
+async function submitGift(sockId, contactTg) {
+  const message = document.getElementById('message')?.value || '';
+  const fileInput = document.getElementById('giftFile');
+  let fileUrl = '';
+
+  // Загрузка файла
+  if (fileInput?.files?.[0]) {
+    const file = fileInput.files[0];
+    const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
+    
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from('gifts')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      alert('Ошибка загрузки файла');
+      return;
+    }
+
+    const {  urlData, error: urlError } = await supabaseClient
+      .storage
+      .from('gifts')
+      .getPublicUrl(fileName);
+
+    if (urlError) {
+      alert('Ошибка получения ссылки');
+      return;
+    }
+
+    fileUrl = urlData?.publicUrl || '';
+  }
+
+  // Сохраняем подарок в БД
+  const { error: giftError } = await supabaseClient
+    .from('gifts')
+    .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
+
+  if (giftError) {
+    alert('Ошибка отправки подарка');
     return;
   }
-    const message = document.getElementById('message')?.value || '';
-    const fileInput = document.getElementById('giftFile');
-    let fileUrl = '';
 
-    // Загрузка файла
-    if (fileInput?.files?.[0]) {
-      const file = fileInput.files[0];
-      const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
-      
-      // 1. Загружаем файл
-      const { error: uploadError } = await supabaseClient
-        .storage
-        .from('gifts')
-        .upload(fileName, file);
+  // ✅ ПОЛНОСТЬЮ ПРАВИЛЬНАЯ ОТПРАВКА УВЕДОМЛЕНИЯ
+  if (contactTg && contactTg.startsWith('@')) {
+    const payload = { sockId, contactTg, message, fileUrl };
+    const jsonPayload = JSON.stringify(payload); // ← КЛЮЧЕВОЙ МОМЕНТ
 
-      if (uploadError) {
-        alert('Ошибка загрузки файла');
-        console.error('Upload error:', uploadError);
-        return;
+    try {
+      const response = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: jsonPayload // ← ТОЛЬКО СТРОКА!
+      });
+
+      if (!response.ok) {
+        console.error('Ошибка уведомления:', await response.text());
       }
-
-      // 2. Получаем публичный URL
-      const { data: urlData, error: urlError } = await supabaseClient
-        .storage
-        .from('gifts')
-        .getPublicUrl(fileName);
-
-      if (urlError) {
-        alert('Ошибка получения ссылки');
-        console.error('URL error:', urlError);
-        return;
-      }
-
-      fileUrl = urlData?.publicUrl || '';
+    } catch (e) {
+      console.error('Ошибка сети:', e);
     }
-     
-    // Сохраняем подарок в БД
-    const { error: giftError } = await supabaseClient
-      .from('gifts')
-      .insert([{ sock_id: sockId, message, file_url: fileUrl || null }]);
-
-    if (giftError) { 
-      alert('Ошибка отправки'); 
-      return; 
-    }
-
-// Отправка уведомления в Telegram
-if (contactTg && contactTg.startsWith('@')) {
-  // Формируем данные
-  const payload = {
-    sockId: sockId,
-    contactTg: contactTg,
-    message: message,
-    fileUrl: fileUrl
-  };
-
-  // Преобразуем в JSON-строку (обязательно!)
-  const jsonPayload = JSON.stringify(payload);
-
-  // Отладка: смотри в Console браузера
-  console.log('📤 Отправляю в /api/notify:', jsonPayload);
-
-  try {
-    const response = await fetch('/api/notify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: jsonPayload // ← только строка, не объект!
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Ошибка от /api/notify:', errorText);
-      alert('Не удалось отправить уведомление');
-    } else {
-      console.log('✅ Уведомление отправлено');
-    }
-  } catch (e) {
-    console.error('💥 Ошибка сети:', e);
-    alert('Ошибка подключения');
   }
+
+  // Сброс формы
+  alert('🎁 Подарок отправлен!');
+  if (document.getElementById('message')) document.getElementById('message').value = '';
+  if (fileInput) fileInput.value = '';
+  const preview = document.getElementById('filePreview');
+  if (preview) preview.remove();
 }
-    alert('🎁 Подарок отправлен! Спасибо!');
-    if (document.getElementById('message')) document.getElementById('message').value = '';
-    if (fileInput) fileInput.value = '';
-    const preview = document.getElementById('filePreview');
-    if (preview) preview.remove();
-  }
   </script>
 </body>
 
 </html>
+
 
 
 

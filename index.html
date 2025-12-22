@@ -347,26 +347,21 @@ const id = path === '/' ? null : path.substring(1);
     }
 
 // Отправка уведомления в Telegram
+// Отправка уведомления в Telegram
 if (contactTg) {
-  const payload = {
-body: JSON.stringify({
-  sockId: sockId,
-  contactTg: contactTg,
-  message: message,
-  fileUrl: fileUrl
-})
-  };
-
-  // Логируем для отладки
-  console.log('📤 Отправляю JSON:', JSON.stringify(payload));
-
   try {
     const response = await fetch('/api/notify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
       },
-      body: JSON.stringify(payload) // ← ОБЯЗАТЕЛЬНО!
+      // ОБЯЗАТЕЛЬНО JSON.stringify!
+      body: JSON.stringify({
+        sockId: sockId,
+        contactTg: contactTg,
+        message: message,
+        fileUrl: fileUrl
+      })
     });
 
     if (!response.ok) {
@@ -389,6 +384,7 @@ body: JSON.stringify({
 </body>
 
 </html>
+
 
 
 

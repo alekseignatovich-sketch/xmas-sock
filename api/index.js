@@ -40,14 +40,14 @@ export default async function handler(req, res) {
   }
 
   // 🔑 Определяем chat_id: username или числовой ID
-  let chat_id;
-  if (contactTg.startsWith('@')) {
-    chat_id = contactTg;
-  } else {
-    const parsedId = Number(contactTg);
-    if (isNaN(parsedId)) {
-      return res.status(400).json({ error: 'Invalid contactTg format' });
-    }
+let chat_id;
+if (contactTg.startsWith('@')) {
+  chat_id = contactTg;
+} else {
+  chat_id = Number(contactTg);
+  if (isNaN(chat_id)) {
+    return res.status(400).json({ error: 'Invalid contactTg' });
+  }
     chat_id = parsedId;
   }
 

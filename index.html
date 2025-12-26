@@ -334,7 +334,6 @@ async function submitGift(sockId, contactTg) {
   }
 
   // ✅ ОТПРАВКА УВЕДОМЛЕНИЯ — ТОЛЬКО ТАК!
-  if (contactTg && contactTg.startsWith('@')) {
     // Создаём объект
     const payload = {
       sockId: sockId,
@@ -386,6 +385,7 @@ console.log('📤 Валиден ли JSON:', (() => {
 </body>
 
 </html>
+
 
 
 

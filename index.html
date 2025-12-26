@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Рождественский носок</title>
+  <title>Christmas Sock / Рождественский носок</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -24,6 +24,30 @@
       overflow-x: hidden;
       margin: 0;
       padding: 0;
+    }
+
+    /* ЯЗЫК */
+    .lang-switcher {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 100;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .lang-btn {
+      padding: 4px 8px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .lang-btn.active {
+      background: var(--main);
+      color: white;
     }
 
     /* СНЕГ */
@@ -81,7 +105,7 @@
     }
 
     .sock-header p {
-      font-size: 1.5em; /* +50% */
+      font-size: 1.5em;
       margin-top: 12px;
       line-height: 1.4;
     }
@@ -146,23 +170,25 @@
       width: 100%;
       font-weight: bold;
       font-family: inherit;
-      transition: all 0.2s ease;
     }
 
-    /* Блок подарков — правый нижний угол */
+    /* Блок подарков — фиксированный размер + скролл */
     .gifts-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
       width: 70%;
       max-width: 400px;
-      background: rgba(255, 255, 255, 0.92);
+      height: 220px; /* фиксированная высота */
+      background: rgba(255, 255, 255, 0.94);
       border-radius: 12px;
       padding: 15px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       z-index: 10;
       backdrop-filter: blur(5px);
       border: 1px solid rgba(231, 76, 60, 0.2);
+      display: flex;
+      flex-direction: column;
     }
 
     .gifts-title {
@@ -170,6 +196,14 @@
       color: var(--main);
       margin-bottom: 10px;
       font-size: 1.1em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .gifts-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
     }
 
     .gift-item {
@@ -184,19 +218,35 @@
     .gift-from {
       font-weight: bold;
       color: #2c3e50;
+      font-size: 1.05em;
     }
 
     .gift-message {
-      margin-top: 4px;
-      font-size: 0.95em;
-      color: #555;
+      margin-top: 6px;
+      font-size: 1em;
+      color: #444;
+      line-height: 1.4;
     }
 
     .no-gifts {
       color: #888;
       font-style: italic;
       text-align: center;
-      font-size: 0.9em;
+      font-size: 0.95em;
+      padding-top: 30px;
+    }
+
+    /* Скроллбар */
+    .gifts-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .gifts-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .gifts-list::-webkit-scrollbar-thumb {
+      background: #c0392b;
+      border-radius: 3px;
     }
 
     @media (max-width: 600px) {
@@ -204,17 +254,102 @@
         width: 90%;
         bottom: 10px;
         right: 10px;
+        height: 200px;
+      }
+      .lang-switcher {
+        top: 10px;
+        right: 10px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="ru">RU</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
   <div class="snowflakes" id="snowflakes"></div>
   <div class="container" id="app">
-    <h2>Загрузка...</h2>
+    <h2>Loading...</h2>
   </div>
 
 <script>
+  // === ЯЗЫК ===
+  const translations = {
+    ru: {
+      titleCreate: '🎄 Создай свой носок',
+      descCreate: 'Друзья смогут оставить Вам поздравления и подарочки',
+      placeholderId: 'Уникальное имя (латиницей): например, ivan2025',
+      placeholderName: 'Твоё имя (для приветствия)',
+      allowText: 'Текстовые поздравления',
+      placeholderPayment: 'Ссылка для перевода (PayPal, Revolut и т.д.)',
+      createBtn: '', // SVG
+      successTitle: '✅ Готово!',
+      successDesc: 'Твой носок создан:',
+      copyBtn: 'Скопировать ссылку',
+      share: 'Размести её в соцсетях!',
+      notFound: 'Носок не найден ❄️',
+      createYour: 'Создать свой',
+      for: 'для',
+      leaveGift: 'Оставь подарок!',
+      yourName: 'Твоё имя',
+      messagePlaceholder: 'Поздравление с Новым годом и Рождеством... (эмодзи и GIF разрешены!)',
+      sendBtn: 'Отправить подарок',
+      paymentBtn: '🎁 Отправить денежный подарок',
+      giftsTitle: '🎁 Подарков:',
+      noGifts: 'Пока нет подарков',
+      alertFill: 'Заполни обязательные поля!',
+      alertIdFormat: 'ID может содержать только буквы, цифры, _ и -',
+      alertError: 'Ошибка! Такой носок уже есть?',
+      alertSent: '🎁 Подарок отправлен!',
+      alertSendError: 'Ошибка отправки'
+    },
+    en: {
+      titleCreate: '🎄 Create your sock',
+      descCreate: 'Friends can leave you greetings and little gifts',
+      placeholderId: 'Unique name (Latin): e.g., ivan2025',
+      placeholderName: 'Your name (for greeting)',
+      allowText: 'Text greetings',
+      placeholderPayment: 'Payment link (PayPal, Revolut, etc.)',
+      createBtn: '',
+      successTitle: '✅ Done!',
+      successDesc: 'Your sock is ready:',
+      copyBtn: 'Copy link',
+      share: 'Share it on social media!',
+      notFound: 'Sock not found ❄️',
+      createYour: 'Create your own',
+      for: 'for',
+      leaveGift: 'Leave a gift!',
+      yourName: 'Your name',
+      messagePlaceholder: 'New Year & Christmas greeting... (emojis & GIFs allowed!)',
+      sendBtn: 'Send gift',
+      paymentBtn: '🎁 Send monetary gift',
+      giftsTitle: '🎁 Gifts:',
+      noGifts: 'No gifts yet',
+      alertFill: 'Please fill required fields!',
+      alertIdFormat: 'ID can only contain letters, digits, _ and -',
+      alertError: 'Error! Sock already exists?',
+      alertSent: '🎁 Gift sent!',
+      alertSendError: 'Send error'
+    }
+  };
+
+  let currentLang = 'ru';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    // Обновить текст при смене языка (опционально)
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLanguage(btn.dataset.lang);
+    });
+  });
+
   // === СНЕГ ===
   function createSnowflakes() {
     const snowContainer = document.getElementById('snowflakes');
@@ -231,7 +366,7 @@
       
       const duration = Math.random() * 12 + 8;
       const delay = Math.random() * 5;
-      const drift = (Math.random() - 0.5) * 100; // метель: влево/вправо
+      const drift = (Math.random() - 0.5) * 100;
       
       snowflake.style.setProperty('--drift', `${drift}px`);
       snowflake.style.animationDuration = `${duration}s`;
@@ -270,24 +405,28 @@
       .replace(/'/g, '&#039;');
   }
 
+  function t(key) {
+    return translations[currentLang][key] || key;
+  }
+
   function showCreateForm() {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     document.getElementById('app').innerHTML = `
       <div class="sock-header">
-        <h1>🎄 Создай свой носок</h1>
-        <p>Друзья смогут оставить Вам поздравления и подарочки</p>
+        <h1>${t('titleCreate')}</h1>
+        <p>${t('descCreate')}</p>
       </div>
       <div class="form-group">
-        <input id="sockId" placeholder="Уникальное имя (латиницей): например, ivan2025" />
+        <input id="sockId" placeholder="${t('placeholderId')}" />
       </div>
       <div class="form-group">
-        <input id="ownerName" placeholder="Твоё имя (для приветствия)" />
+        <input id="ownerName" placeholder="${t('placeholderName')}" />
       </div>
       <div class="form-group">
-        <label><input type="checkbox" id="allowText" checked /> Текстовые поздравления</label>
+        <label><input type=" checkbox" id="allowText" checked /> ${t('allowText')}</label>
       </div>
       <div class="form-group">
-        <input id="paymentLink" placeholder="Ссылка для перевода (PayPal, Revolut и т.д.)" />
+        <input id="paymentLink" placeholder="${t('placeholderPayment')}" />
       </div>
       
       <button class="sock-button" onclick="createSock()">
@@ -308,11 +447,11 @@
     const paymentLink = document.getElementById('paymentLink').value.trim();
     
     if (!sockId || !ownerName) { 
-      alert('Заполни обязательные поля!'); 
+      alert(t('alertFill')); 
       return; 
     }
     if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { 
-      alert('ID может содержать только буквы, цифры, _ и -'); 
+      alert(t('alertIdFormat')); 
       return; 
     }
 
@@ -326,45 +465,46 @@
       }]);
 
     if (error) { 
-      console.error(error); 
-      alert('Ошибка! Такой носок уже есть?'); 
+      alert(t('alertError')); 
       return; 
     }
 
     const url = window.location.origin + '/' + sockId;
     document.getElementById('app').innerHTML = `
       <div class="success">
-        <h2>✅ Готово!</h2>
-        <p>Твой носок создан:</p>
+        <h2>${t('successTitle')}</h2>
+        <p>${t('successDesc')}</p>
         <div style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
-        <button onclick="navigator.clipboard.writeText('${url}')">Скопировать ссылку</button>
-        <p style="margin-top:15px;font-size:14px;color:#666;">Размести её в соцсетях!</p>
+        <button onclick="navigator.clipboard.writeText('${url}')">${t('copyBtn')}</button>
+        <p style="margin-top:15px;font-size:14px;color:#666;">${t('share')}</p>
       </div>
     `;
   }
 
-  // ЗАГРУЗКА ПОДАРКОВ (без файлов)
   async function loadGifts(sockId, container) {
-    container.innerHTML = '<p>Загрузка...</p>';
+    container.innerHTML = '<p>Loading...</p>';
     const { data, error } = await supabaseClient
       .from('gifts')
       .select('*')
       .eq('sock_id', sockId)
       .order('created_at', { ascending: false });
 
+    const listContainer = container.querySelector('.gifts-list') || container;
+    
     if (error || !data || data.length === 0) {
-      container.innerHTML = `<p class="no-gifts">Пока нет подарков</p>`;
+      listContainer.innerHTML = `<p class="no-gifts">${t('noGifts')}</p>`;
     } else {
-      let html = `<div class="gifts-title">🎁 Подарков: ${data.length}</div>`;
+      let html = '';
       data.forEach(gift => {
         html += `<div class="gift-item">`;
-        html += `<div class="gift-from">${escapeHtml(gift.sender_name || 'Аноним')}</div>`;
+        html += `<div class="gift-from">${escapeHtml(gift.sender_name || (currentLang === 'en' ? 'Anonymous' : 'Аноним'))}</div>`;
         if (gift.message) {
+          // Эмодзи и GIF отображаются как есть (браузер сам рендерит)
           html += `<div class="gift-message">${escapeHtml(gift.message)}</div>`;
         }
         html += `</div>`;
       });
-      container.innerHTML = html;
+      listContainer.innerHTML = html;
     }
   }
 
@@ -379,8 +519,8 @@
       if (autoRefreshInterval) clearInterval(autoRefreshInterval);
       document.getElementById('app').innerHTML = `
         <div class="sock-header">
-          <h2>Носок не найден ❄️</h2>
-          <p><a href="/" style="color:white;text-decoration:underline;">Создать свой</a></p>
+          <h2>${t('notFound')}</h2>
+          <p><a href="/" style="color:white;text-decoration:underline;">${t('createYour')}</a></p>
         </div>
       `;
       return;
@@ -388,47 +528,59 @@
 
     let html = `
       <div class="sock-header">
-        <h2>Рождественский носок</h2>
-        <h3>для ${escapeHtml(data.owner_name)}</h3>
+        <h2>Christmas Sock / Рождественский носок</h2>
+        <h3>${t('for')} ${escapeHtml(data.owner_name)}</h3>
       </div>
-      <h3 style="margin:20px 0;color:white;">Оставь подарок!</h3>
-      <div class="form-group"><input id="senderName" placeholder="Твоё имя" /></div>
+      <h3 style="margin:20px 0;color:white;">${t('leaveGift')}</h3>
+      <div class="form-group"><input id="senderName" placeholder="${t('yourName')}" /></div>
     `;
 
     if (data.allow_text) {
-      html += `<div class="form-group"><textarea id="message" placeholder="Поздравление с Новым годом и Рождеством..."></textarea></div>`;
+      html += `<div class="form-group"><textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea></div>`;
     }
 
     html += `<div id="submitBtnContainer"></div>`;
 
     if (data.payment_link) {
-      html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">🎁 Отправить денежный подарок</a>`;
+      html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">${t('paymentBtn')}</a>`;
     }
 
     document.getElementById('app').innerHTML = html;
 
-    // Контейнер для подарков в углу
     let giftsContainer = document.getElementById('giftsCorner');
     if (!giftsContainer) {
       giftsContainer = document.createElement('div');
       giftsContainer.id = 'giftsCorner';
       giftsContainer.className = 'gifts-container';
+      giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
       document.body.appendChild(giftsContainer);
     }
-    loadGifts(id, giftsContainer);
+    
+    const listEl = giftsContainer.querySelector('.gifts-list');
+    loadGifts(id, listEl);
+    
+    // Обновить счётчик
+    const { count } = await supabaseClient
+      .from('gifts')
+      .select('*', { count: 'exact', head: true })
+      .eq('sock_id', id);
+    document.getElementById('giftsCount').textContent = count || 0;
 
-    // Автообновление каждые 20 сек
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(() => {
-      loadGifts(id, giftsContainer);
+    autoRefreshInterval = setInterval(async () => {
+      loadGifts(id, listEl);
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', id);
+      document.getElementById('giftsCount').textContent = count || 0;
     }, 20000);
 
-    // Кнопка отправки
     const btnContainer = document.getElementById('submitBtnContainer');
     if (btnContainer) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = 'Отправить подарок';
+      btn.textContent = t('sendBtn');
       btn.style.cssText = `
         width: 100%;
         padding: 12px;
@@ -448,7 +600,7 @@
   }
    
   async function submitGift(sockId) {
-    const senderName = document.getElementById('senderName')?.value.trim() || 'Аноним';
+    const senderName = document.getElementById('senderName')?.value.trim() || (currentLang === 'en' ? 'Anonymous' : 'Аноним');
     const message = document.getElementById('message')?.value || '';
 
     const { error: giftError } = await supabaseClient
@@ -460,17 +612,23 @@
       }]);
 
     if (giftError) {
-      alert('Ошибка отправки');
+      alert(t('alertSendError'));
       return;
     }
 
-    alert('🎁 Подарок отправлен!');
+    alert(t('alertSent'));
     if (document.getElementById('senderName')) document.getElementById('senderName').value = '';
     if (document.getElementById('message')) document.getElementById('message').value = '';
 
-    // Обновить подарки
-    const giftsContainer = document.getElementById('giftsCorner');
-    if (giftsContainer) loadGifts(sockId, giftsContainer);
+    const listEl = document.querySelector('#giftsCorner .gifts-list');
+    if (listEl) {
+      loadGifts(sockId, listEl);
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', sockId);
+      document.getElementById('giftsCount').textContent = count || 0;
+    }
   }
 
   window.addEventListener('beforeunload', () => {

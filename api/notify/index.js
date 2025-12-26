@@ -1,6 +1,4 @@
-// api/index.js
-import { Readable } from 'stream';
-
+// api/notify/index.js
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -47,7 +45,6 @@ export default async function handler(req, res) {
     if (isNaN(chat_id)) {
       return res.status(400).json({ error: 'Invalid contactTg format' });
     }
-    // НЕТ СТРОКИ chat_id = parsedId!
   }
 
   const text = `🎄 Тебе оставили подарок в носке "${sockId}"!\n\nСообщение: ${message || '—'}\n${fileUrl ? `Файл: ${fileUrl}` : ''}`;

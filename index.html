@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name=" punitive="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Рождественский носок</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
@@ -16,21 +16,54 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Nunito', 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+      background: linear-gradient(135deg, #0c1e3e, #2c3e50);
       color: var(--dark);
       line-height: 1.6;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
       min-height: 100vh;
       position: relative;
       overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
+
+    /* СНЕГ */
+    .snowflakes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .snowflake {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.85;
+      filter: blur(0.8px);
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg) translateX(var(--drift));
+      }
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
     h1, h2, h3 {
       font-family: 'Mountains of Christmas', cursive;
       color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
     }
+
     .sock-header {
       background: var(--main);
       color: white;
@@ -38,29 +71,25 @@
       border-radius: 16px;
       text-align: center;
       margin-bottom: 24px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
       position: relative;
       overflow: hidden;
     }
-    .sock-header::after {
-      content: "🎁";
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 24px;
+
+    .sock-header h1 {
+      font-size: 2.4em;
     }
-    .sock-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: white;
-      margin-bottom: 12px;
-      border: 3px solid white;
+
+    .sock-header p {
+      font-size: 1.5em; /* +50% */
+      margin-top: 12px;
+      line-height: 1.4;
     }
+
     .form-group {
       margin-bottom: 16px;
     }
+
     input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -69,22 +98,42 @@
       font-size: 16px;
       font-family: inherit;
     }
+
     textarea {
       min-height: 100px;
       resize: vertical;
     }
-    button {
-      background: var(--main);
-      color: white;
+
+    .sock-button {
+      background: none;
       border: none;
-      font-weight: bold;
       cursor: pointer;
-      transition: all 0.2s ease;
+      margin: 30px auto;
+      display: block;
+      width: 120px;
+      height: 160px;
+      position: relative;
+      transition: transform 0.3s ease;
     }
-    button:hover { 
-      opacity: 0.9; 
-      transform: translateY(-2px);
+
+    .sock-button:hover {
+      transform: scale(1.05) translateY(-5px);
     }
+
+    .sock-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
+
+    .success {
+      background: rgba(213, 245, 227, 0.95);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
     .payment-btn {
       background: #f39c12;
       padding: 14px;
@@ -99,118 +148,106 @@
       font-family: inherit;
       transition: all 0.2s ease;
     }
-    .payment-btn:hover {
-      background: #d35400;
-      transform: translateY(-2px);
-    }
-    .gift-preview {
-      margin-top: 10px;
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .success {
-      background: rgba(213, 245, 227, 0.95);
-      padding: 15px;
-      border-radius: 10px;
-      margin: 20px 0;
-      text-align: center;
-    }
+
+    /* Блок подарков — правый нижний угол */
     .gifts-container {
-      margin-top: 30px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.15);
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 70%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.92);
       border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      z-index: 10;
       backdrop-filter: blur(5px);
-      text-align: left;
+      border: 1px solid rgba(231, 76, 60, 0.2);
     }
+
     .gifts-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    .refresh-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .gift-item {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      color: var(--dark);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.5s forwards;
-    }
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .gift-from {
       font-weight: bold;
       color: var(--main);
-      margin-bottom: 6px;
+      margin-bottom: 10px;
       font-size: 1.1em;
     }
+
+    .gift-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .gift-item:last-child {
+      border-bottom: none;
+    }
+
+    .gift-from {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
     .gift-message {
-      margin: 8px 0;
-      color: #333;
+      margin-top: 4px;
+      font-size: 0.95em;
+      color: #555;
     }
-    .gift-file {
-      display: block;
-      margin-top: 10px;
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+
     .no-gifts {
-      color: #aaa;
+      color: #888;
       font-style: italic;
       text-align: center;
-      padding: 20px;
+      font-size: 0.9em;
     }
-    .new-badge {
-      background: var(--success);
-      color: white;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      margin-left: 6px;
+
+    @media (max-width: 600px) {
+      .gifts-container {
+        width: 90%;
+        bottom: 10px;
+        right: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="app">
+  <div class="snowflakes" id="snowflakes"></div>
+  <div class="container" id="app">
     <h2>Загрузка...</h2>
   </div>
 
 <script>
-  function escapeHtml(text) {
-    if (typeof text !== 'string') return '';
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+  // === СНЕГ ===
+  function createSnowflakes() {
+    const snowContainer = document.getElementById('snowflakes');
+    const snowflakeCount = 60;
+    for (let i = 0; i < snowflakeCount; i++) {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      
+      const size = Math.random() * 6 + 2;
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      
+      snowflake.style.left = `${Math.random() * 100}vw`;
+      
+      const duration = Math.random() * 12 + 8;
+      const delay = Math.random() * 5;
+      const drift = (Math.random() - 0.5) * 100; // метель: влево/вправо
+      
+      snowflake.style.setProperty('--drift', `${drift}px`);
+      snowflake.style.animationDuration = `${duration}s`;
+      snowflake.style.animationDelay = `${delay}s`;
+      
+      snowContainer.appendChild(snowflake);
+    }
   }
-  
+  createSnowflakes();
+
+  // === SUPABASE ===
   const SUPABASE_URL = 'https://cpuoiglvjpiuwqfqvkkw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let autoRefreshInterval = null;
-  let lastGiftCount = 0;
 
   const path = window.location.pathname;
   const id = path === '/' ? null : path.substring(1);
@@ -223,14 +260,22 @@
     }
   })();
 
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function showCreateForm() {
-    // Очищаем интервал, если есть
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    
     document.getElementById('app').innerHTML = `
       <div class="sock-header">
         <h1>🎄 Создай свой носок</h1>
-        <p>Друзья оставят поздравления, открытки или подарок</p>
+        <p>Друзья смогут оставить Вам поздравления и подарочки</p>
       </div>
       <div class="form-group">
         <input id="sockId" placeholder="Уникальное имя (латиницей): например, ivan2025" />
@@ -239,43 +284,52 @@
         <input id="ownerName" placeholder="Твоё имя (для приветствия)" />
       </div>
       <div class="form-group">
-        <input id="avatarUrl" placeholder="Ссылка на фото (опционально)" />
-      </div>
-      <div class="form-group">
         <label><input type="checkbox" id="allowText" checked /> Текстовые поздравления</label>
-      </div>
-      <div class="form-group">
-        <label><input type="checkbox" id="allowFiles" checked /> Открытки (GIF, PNG, JPG)</label>
       </div>
       <div class="form-group">
         <input id="paymentLink" placeholder="Ссылка для перевода (PayPal, Revolut и т.д.)" />
       </div>
-      <button onclick="createSock()">Создать носок</button>
+      
+      <button class="sock-button" onclick="createSock()">
+        <svg class="sock-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,120 Q50,40 80,120 Q70,130 50,135 Q30,130 20,120 Z" fill="#e74c3c"/>
+          <circle cx="50" cy="80" r="8" fill="#27ae60"/>
+          <circle cx="45" cy="70" r="3" fill="white"/>
+          <circle cx="55" cy="70" r="3" fill="white"/>
+        </svg>
+      </button>
     `;
   }
 
   async function createSock() {
     const sockId = document.getElementById('sockId').value.trim();
     const ownerName = document.getElementById('ownerName').value.trim();
-    const avatarUrl = document.getElementById('avatarUrl').value.trim();
     const allowText = document.getElementById('allowText').checked;
-    const allowFiles = document.getElementById('allowFiles').checked;
     const paymentLink = document.getElementById('paymentLink').value.trim();
-    if (!sockId || !ownerName) { alert('Заполни обязательные поля!'); return; }
-    if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { alert('ID может содержать только буквы, цифры, _ и -'); return; }
+    
+    if (!sockId || !ownerName) { 
+      alert('Заполни обязательные поля!'); 
+      return; 
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { 
+      alert('ID может содержать только буквы, цифры, _ и -'); 
+      return; 
+    }
 
     const { error } = await supabaseClient
       .from('socks')
       .insert([{
         id: sockId,
         owner_name: ownerName,
-        avatar_url: avatarUrl || null,
         allow_text: allowText,
-        allow_files: allowFiles,
         payment_link: paymentLink || null
       }]);
 
-    if (error) { console.error(error); alert('Ошибка! Такой носок уже есть?'); return; }
+    if (error) { 
+      console.error(error); 
+      alert('Ошибка! Такой носок уже есть?'); 
+      return; 
+    }
 
     const url = window.location.origin + '/' + sockId;
     document.getElementById('app').innerHTML = `
@@ -289,55 +343,29 @@
     `;
   }
 
-  // ЗАГРУЗКА ПОДАРКОВ (с поддержкой анимации новых)
-  async function loadGifts(sockId, container, isAutoRefresh = false) {
-    if (!isAutoRefresh) {
-      container.innerHTML = '<p>Загрузка подарков...</p>';
-    }
-    
+  // ЗАГРУЗКА ПОДАРКОВ (без файлов)
+  async function loadGifts(sockId, container) {
+    container.innerHTML = '<p>Загрузка...</p>';
     const { data, error } = await supabaseClient
       .from('gifts')
       .select('*')
       .eq('sock_id', sockId)
       .order('created_at', { ascending: false });
 
-    if (error || !data) {
-      if (!isAutoRefresh) container.innerHTML = `<p class="no-gifts">Ошибка загрузки подарков</p>`;
-      return;
-    }
-
-    const newGiftCount = data.length;
-    const hasNewGifts = isAutoRefresh && newGiftCount > lastGiftCount;
-    lastGiftCount = newGiftCount;
-
-    let html = `
-      <div class="gifts-title">
-        <h3>🎁 Подарков: ${newGiftCount}</h3>
-        <button class="refresh-btn" onclick="loadGifts('${sockId}', document.getElementById('giftsList'))">🔄 Обновить</button>
-      </div>
-    `;
-
-    if (newGiftCount === 0) {
-      html += `<p class="no-gifts">Пока никто не оставил подарков ❄️</p>`;
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `<p class="no-gifts">Пока нет подарков</p>`;
     } else {
-      data.forEach((gift, index) => {
-        const isNew = hasNewGifts && index < (newGiftCount - lastGiftCount + (newGiftCount - lastGiftCount));
-        html += `<div class="gift-item"${isNew ? ' style="animation-delay: 0.1s;"' : ''}>`;
-        html += `<div class="gift-from">От: ${escapeHtml(gift.sender_name || 'Аноним')}${isNew ? ' <span class="new-badge">НОВЫЙ</span>' : ''}</div>`;
+      let html = `<div class="gifts-title">🎁 Подарков: ${data.length}</div>`;
+      data.forEach(gift => {
+        html += `<div class="gift-item">`;
+        html += `<div class="gift-from">${escapeHtml(gift.sender_name || 'Аноним')}</div>`;
         if (gift.message) {
           html += `<div class="gift-message">${escapeHtml(gift.message)}</div>`;
         }
-        if (gift.file_url) {
-          const ext = gift.file_url.split('.').pop().toLowerCase();
-          if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) {
-            html += `<img src="${escapeHtml(gift.file_url)}" class="gift-file" />`;
-          }
-        }
         html += `</div>`;
       });
+      container.innerHTML = html;
     }
-
-    container.innerHTML = html;
   }
 
   async function showPublicSock(id) {
@@ -362,28 +390,16 @@
       <div class="sock-header">
         <h2>Рождественский носок</h2>
         <h3>для ${escapeHtml(data.owner_name)}</h3>
+      </div>
+      <h3 style="margin:20px 0;color:white;">Оставь подарок!</h3>
+      <div class="form-group"><input id="senderName" placeholder="Твоё имя" /></div>
     `;
-
-    if (data.avatar_url) {
-      html += `<img src="${escapeHtml(data.avatar_url)}" class="sock-avatar" />`;
-    }
-
-    html += `</div>`;
-    html += `<h3 style="margin:20px 0;color:white;">Оставь подарок!</h3>`;
-
-    html += `<div class="form-group"><input id="senderName" placeholder="Твоё имя (как подписать подарок)" /></div>`;
 
     if (data.allow_text) {
       html += `<div class="form-group"><textarea id="message" placeholder="Поздравление с Новым годом и Рождеством..."></textarea></div>`;
     }
 
-    if (data.allow_files) {
-      html += `<div class="form-group"><input type="file" id="giftFile" accept=".png,.jpg,.jpeg,.gif" /></div>`;
-    }
-
     html += `<div id="submitBtnContainer"></div>`;
-
-    html += `<div class="gifts-container"><div id="giftsList"></div></div>`;
 
     if (data.payment_link) {
       html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">🎁 Отправить денежный подарок</a>`;
@@ -391,13 +407,20 @@
 
     document.getElementById('app').innerHTML = html;
 
-    // Загружаем подарки впервые
-    loadGifts(id, document.getElementById('giftsList'));
+    // Контейнер для подарков в углу
+    let giftsContainer = document.getElementById('giftsCorner');
+    if (!giftsContainer) {
+      giftsContainer = document.createElement('div');
+      giftsContainer.id = 'giftsCorner';
+      giftsContainer.className = 'gifts-container';
+      document.body.appendChild(giftsContainer);
+    }
+    loadGifts(id, giftsContainer);
 
-    // Запускаем автообновление каждые 20 секунд
+    // Автообновление каждые 20 сек
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     autoRefreshInterval = setInterval(() => {
-      loadGifts(id, document.getElementById('giftsList'), true);
+      loadGifts(id, giftsContainer);
     }, 20000);
 
     // Кнопка отправки
@@ -411,7 +434,7 @@
         padding: 12px;
         border: 1px solid #ddd;
         border-radius: 10px;
-        background: ${getComputedStyle(document.body).getPropertyValue('--main')};
+        background: #e74c3c;
         color: white;
         font-weight: bold;
         cursor: pointer;
@@ -422,91 +445,34 @@
       };
       btnContainer.appendChild(btn);
     }
-
-    // Preview изображения
-    const fileInput = document.getElementById('giftFile');
-    if (fileInput) {
-      fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            let preview = document.getElementById('filePreview');
-            if (!preview) {
-              preview = document.createElement('img');
-              preview.id = 'filePreview';
-              preview.className = 'gift-preview';
-              fileInput.parentNode.appendChild(preview);
-            }
-            preview.src = ev.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
   }
    
   async function submitGift(sockId) {
     const senderName = document.getElementById('senderName')?.value.trim() || 'Аноним';
     const message = document.getElementById('message')?.value || '';
-    const fileInput = document.getElementById('giftFile');
-    let fileUrl = '';
-
-    if (fileInput?.files?.[0]) {
-      const file = fileInput.files[0];
-      const fileName = `${sockId}/${Date.now()}_${encodeURIComponent(file.name)}`;
-      
-      const { error: uploadError } = await supabaseClient
-        .storage
-        .from('gifts')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        alert('Ошибка загрузки изображения');
-        return;
-      }
-
-      const { urlData, error: urlError } = await supabaseClient
-        .storage
-        .from('gifts')
-        .getPublicUrl(fileName);
-
-      if (urlError) {
-        alert('Ошибка получения ссылки');
-        return;
-      }
-
-      fileUrl = urlData?.publicUrl || '';
-    }
 
     const { error: giftError } = await supabaseClient
       .from('gifts')
       .insert([{ 
         sock_id: sockId, 
         sender_name: senderName,
-        message: message || null, 
-        file_url: fileUrl || null 
+        message: message || null
       }]);
 
     if (giftError) {
-      alert('Ошибка отправки подарка');
+      alert('Ошибка отправки');
       return;
     }
 
-    // Обновляем список
-    loadGifts(sockId, document.getElementById('giftsList'));
-
-    // Сбрасываем форму
+    alert('🎁 Подарок отправлен!');
     if (document.getElementById('senderName')) document.getElementById('senderName').value = '';
     if (document.getElementById('message')) document.getElementById('message').value = '';
-    if (fileInput) {
-      fileInput.value = '';
-      const preview = document.getElementById('filePreview');
-      if (preview) preview.remove();
-    }
+
+    // Обновить подарки
+    const giftsContainer = document.getElementById('giftsCorner');
+    if (giftsContainer) loadGifts(sockId, giftsContainer);
   }
 
-  // Очистка при уходе со страницы
   window.addEventListener('beforeunload', () => {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
   });

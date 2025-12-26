@@ -1,9 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/api/notify",
-      "dest": "/api/notify/index.js"
-    }
-  ]
-}
-

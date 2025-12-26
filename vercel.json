@@ -1,13 +1,9 @@
 {
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
-  ],
   "routes": [
     {
       "src": "/api/notify",
       "dest": "/api/notify/index.js"
     }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  ]
 }
+

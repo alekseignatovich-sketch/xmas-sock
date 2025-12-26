@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/notify", "destination": "/api/notify.js" },
+    { "source": "/:path*", "destination": "/index.html" }
+  ]
+}

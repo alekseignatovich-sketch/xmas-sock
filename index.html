@@ -36,7 +36,7 @@
       color: white;
       padding: 25px;
       border-radius: 16px;
-      text-align:: center;
+      text-align: center;
       margin-bottom: 24px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
       position: relative;
@@ -109,14 +109,15 @@
       text-align: center;
     }
     .gifts-container {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
+      margin-top: 25px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
       backdrop-filter: blur(5px);
+      text-align: left;
     }
     .gift-item {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 12px;
@@ -129,7 +130,7 @@
       text-decoration: underline;
     }
     .no-gifts {
-      color: #ccc;
+      color: #888;
       font-style: italic;
     }
   </style>
@@ -193,6 +194,38 @@
     `;
   }
 
+  // Функция загрузки подарков
+  async function loadGifts(sockId, container) {
+    container.innerHTML = '<p>Загрузка подарков...</p>';
+    const { data, error } = await supabaseClient
+      .from('gifts')
+      .select('*')
+      .eq('sock_id', sockId)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `<p class="no-gifts">Пока никто не оставил подарков ❄️</p>`;
+    } else {
+      let html = `<h4>🎁 Получено подарков: ${data.length}</h4>`;
+      data.forEach(gift => {
+        html += `<div class="gift-item">`;
+        if (gift.message) {
+          html += `<p>${escapeHtml(gift.message)}</p>`;
+        }
+        if (gift.file_url) {
+          const ext = gift.file_url.split('.').pop().toLowerCase();
+          if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) {
+            html += `<img src="${escapeHtml(gift.file_url)}" class="gift-preview" />`;
+          } else {
+            html += `<a href="${escapeHtml(gift.file_url)}" target="_blank" class="gift-file">📎 Открытка (${ext.toUpperCase()})</a>`;
+          }
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+  }
+
   async function createSock() {
     const sockId = document.getElementById('sockId').value.trim();
     const ownerName = document.getElementById('ownerName').value.trim();
@@ -212,7 +245,6 @@
         allow_text: allowText,
         allow_files: allowFiles,
         payment_link: paymentLink || null
-        // УБРАЛИ contact_tg
       }]);
 
     if (error) { console.error(error); alert('Ошибка! Такой носок уже есть?'); return; }
@@ -226,9 +258,17 @@
         <button onclick="navigator.clipboard.writeText('${url}')">Скопировать ссылку</button>
         <p style="margin-top:15px;font-size:14px;color:#666;">Размести её в соцсетях!</p>
       </div>
+      <div class="gifts-container">
+        <h3>🎁 Твои подарки</h3>
+        <div id="giftsList"></div>
+      </div>
     `;
+
+    // Загружаем подарки для этого носка
+    loadGifts(sockId, document.getElementById('giftsList'));
   }
 
+  // Страница носка — только форма, без подарков
   async function showPublicSock(id) {
     const { data, error } = await supabaseClient
       .from('socks')
@@ -269,10 +309,6 @@
 
     html += `<div id="submitBtnContainer"></div>`;
 
-    // КНОПКА ПОДАРКОВ
-    html += `<button id="showGiftsBtn" style="margin-top:20px;background:#3498db;">Посмотреть подарки</button>`;
-    html += `<div id="giftsList" class="gifts-container hidden"></div>`;
-
     if (data.payment_link) {
       html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">🎁 Отправить денежный подарок</a>`;
     }
@@ -301,11 +337,6 @@
       };
       btnContainer.appendChild(btn);
     }
-
-    // Кнопка подарков
-    document.getElementById('showGiftsBtn').onclick = () => {
-      loadGifts(id);
-    };
 
     // Preview файла
     const fileInput = document.getElementById('giftFile');
@@ -376,47 +407,6 @@
     if (fileInput) fileInput.value = '';
     const preview = document.getElementById('filePreview');
     if (preview) preview.remove();
-  }
-
-  // ЗАГРУЗКА ПОДАРКОВ
-  async function loadGifts(sockId) {
-    const btn = document.getElementById('showGiftsBtn');
-    btn.disabled = true;
-    btn.textContent = 'Загрузка...';
-
-    const { data, error } = await supabaseClient
-      .from('gifts')
-      .select('*')
-      .eq('sock_id', sockId)
-      .order('created_at', { ascending: false });
-
-    const container = document.getElementById('giftsList');
-    container.classList.remove('hidden');
-
-    if (error || !data || data.length === 0) {
-      container.innerHTML = `<p class="no-gifts">Пока никто не оставил подарков ❄️</p>`;
-    } else {
-      let html = `<h4>🎁 Подарки (${data.length}):</h4>`;
-      data.forEach(gift => {
-        html += `<div class="gift-item">`;
-        if (gift.message) {
-          html += `<p>${escapeHtml(gift.message)}</p>`;
-        }
-        if (gift.file_url) {
-          const ext = gift.file_url.split('.').pop().toLowerCase();
-          if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) {
-            html += `<img src="${escapeHtml(gift.file_url)}" class="gift-preview" />`;
-          } else {
-            html += `<a href="${escapeHtml(gift.file_url)}" target="_blank" class="gift-file">📎 Открытка (${ext.toUpperCase()})</a>`;
-          }
-        }
-        html += `</div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Посмотреть подарки';
   }
 </script>
 </body>

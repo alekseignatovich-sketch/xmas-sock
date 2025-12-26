@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Christmas Sock / Рождественский носок</title>
+  <title id="page-title">Рождественский носок</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -128,26 +128,17 @@
       resize: vertical;
     }
 
-    .sock-button {
-      background: none;
+    .create-sock-btn {
+      background: var(--main);
+      color: white;
       border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
       cursor: pointer;
-      margin: 30px auto;
-      display: block;
-      width: 120px;
-      height: 160px;
-      position: relative;
-      transition: transform 0.3s ease;
-    }
-
-    .sock-button:hover {
-      transform: scale(1.05) translateY(-5px);
-    }
-
-    .sock-svg {
       width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      font-size: 16px;
+      margin-top: 10px;
     }
 
     .success {
@@ -172,14 +163,14 @@
       font-family: inherit;
     }
 
-    /* Блок подарков — фиксированный размер + скролл */
+    /* Блок подарков */
     .gifts-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
       width: 70%;
       max-width: 400px;
-      height: 220px; /* фиксированная высота */
+      height: 220px;
       background: rgba(255, 255, 255, 0.94);
       border-radius: 12px;
       padding: 15px;
@@ -236,7 +227,6 @@
       padding-top: 30px;
     }
 
-    /* Скроллбар */
     .gifts-list::-webkit-scrollbar {
       width: 6px;
     }
@@ -247,6 +237,18 @@
     .gifts-list::-webkit-scrollbar-thumb {
       background: #c0392b;
       border-radius: 3px;
+    }
+
+    .create-your-link {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: center;
     }
 
     @media (max-width: 600px) {
@@ -274,16 +276,16 @@
   </div>
 
 <script>
-  // === ЯЗЫК ===
   const translations = {
     ru: {
+      title: 'Рождественский носок',
       titleCreate: '🎄 Создай свой носок',
       descCreate: 'Друзья смогут оставить Вам поздравления и подарочки',
       placeholderId: 'Уникальное имя (латиницей): например, ivan2025',
       placeholderName: 'Твоё имя (для приветствия)',
       allowText: 'Текстовые поздравления',
       placeholderPayment: 'Ссылка для перевода (PayPal, Revolut и т.д.)',
-      createBtn: '', // SVG
+      createBtn: 'Создать носок',
       successTitle: '✅ Готово!',
       successDesc: 'Твой носок создан:',
       copyBtn: 'Скопировать ссылку',
@@ -296,6 +298,7 @@
       messagePlaceholder: 'Поздравление с Новым годом и Рождеством... (эмодзи и GIF разрешены!)',
       sendBtn: 'Отправить подарок',
       paymentBtn: '🎁 Отправить денежный подарок',
+      createYourSockBtn: 'Создай свой носок и получай поздравления!',
       giftsTitle: '🎁 Подарков:',
       noGifts: 'Пока нет подарков',
       alertFill: 'Заполни обязательные поля!',
@@ -305,13 +308,14 @@
       alertSendError: 'Ошибка отправки'
     },
     en: {
+      title: 'Christmas Sock',
       titleCreate: '🎄 Create your sock',
       descCreate: 'Friends can leave you greetings and little gifts',
       placeholderId: 'Unique name (Latin): e.g., ivan2025',
       placeholderName: 'Your name (for greeting)',
       allowText: 'Text greetings',
       placeholderPayment: 'Payment link (PayPal, Revolut, etc.)',
-      createBtn: '',
+      createBtn: 'Create Sock',
       successTitle: '✅ Done!',
       successDesc: 'Your sock is ready:',
       copyBtn: 'Copy link',
@@ -324,6 +328,7 @@
       messagePlaceholder: 'New Year & Christmas greeting... (emojis & GIFs allowed!)',
       sendBtn: 'Send gift',
       paymentBtn: '🎁 Send monetary gift',
+      createYourSockBtn: 'Create your sock and receive greetings!',
       giftsTitle: '🎁 Gifts:',
       noGifts: 'No gifts yet',
       alertFill: 'Please fill required fields!',
@@ -335,13 +340,28 @@
   };
 
   let currentLang = 'ru';
+  let autoRefreshInterval = null;
+  const SUPABASE_URL = 'https://cpuoiglvjpiuwqfqvkkw.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   function setLanguage(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
-    // Обновить текст при смене языка (опционально)
+    document.getElementById('page-title').textContent = translations[lang].title;
+    updateUI();
+  }
+
+  function updateUI() {
+    const path = window.location.pathname;
+    const id = path === '/' ? null : path.substring(1);
+    if (id && id.length > 0) {
+      showPublicSock(id, true);
+    } else {
+      showCreateForm();
+    }
   }
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -350,43 +370,29 @@
     });
   });
 
-  // === СНЕГ ===
   function createSnowflakes() {
     const snowContainer = document.getElementById('snowflakes');
     const snowflakeCount = 60;
     for (let i = 0; i < snowflakeCount; i++) {
       const snowflake = document.createElement('div');
       snowflake.classList.add('snowflake');
-      
       const size = Math.random() * 6 + 2;
       snowflake.style.width = `${size}px`;
       snowflake.style.height = `${size}px`;
-      
       snowflake.style.left = `${Math.random() * 100}vw`;
-      
       const duration = Math.random() * 12 + 8;
       const delay = Math.random() * 5;
       const drift = (Math.random() - 0.5) * 100;
-      
       snowflake.style.setProperty('--drift', `${drift}px`);
       snowflake.style.animationDuration = `${duration}s`;
       snowflake.style.animationDelay = `${delay}s`;
-      
       snowContainer.appendChild(snowflake);
     }
   }
   createSnowflakes();
 
-  // === SUPABASE ===
-  const SUPABASE_URL = 'https://cpuoiglvjpiuwqfqvkkw.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  let autoRefreshInterval = null;
-
   const path = window.location.pathname;
   const id = path === '/' ? null : path.substring(1);
-
   (async () => {
     if (id && id.length > 0) {
       await showPublicSock(id);
@@ -423,20 +429,12 @@
         <input id="ownerName" placeholder="${t('placeholderName')}" />
       </div>
       <div class="form-group">
-        <label><input type=" checkbox" id="allowText" checked /> ${t('allowText')}</label>
+        <label><input type="checkbox" id="allowText" checked /> ${t('allowText')}</label>
       </div>
       <div class="form-group">
         <input id="paymentLink" placeholder="${t('placeholderPayment')}" />
       </div>
-      
-      <button class="sock-button" onclick="createSock()">
-        <svg class="sock-svg" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20,120 Q50,40 80,120 Q70,130 50,135 Q30,130 20,120 Z" fill="#e74c3c"/>
-          <circle cx="50" cy="80" r="8" fill="#27ae60"/>
-          <circle cx="45" cy="70" r="3" fill="white"/>
-          <circle cx="55" cy="70" r="3" fill="white"/>
-        </svg>
-      </button>
+      <button class="create-sock-btn" onclick="createSock()">${t('createBtn')}</button>
     `;
   }
 
@@ -481,34 +479,7 @@
     `;
   }
 
-  async function loadGifts(sockId, container) {
-    container.innerHTML = '<p>Loading...</p>';
-    const { data, error } = await supabaseClient
-      .from('gifts')
-      .select('*')
-      .eq('sock_id', sockId)
-      .order('created_at', { ascending: false });
-
-    const listContainer = container.querySelector('.gifts-list') || container;
-    
-    if (error || !data || data.length === 0) {
-      listContainer.innerHTML = `<p class="no-gifts">${t('noGifts')}</p>`;
-    } else {
-      let html = '';
-      data.forEach(gift => {
-        html += `<div class="gift-item">`;
-        html += `<div class="gift-from">${escapeHtml(gift.sender_name || (currentLang === 'en' ? 'Anonymous' : 'Аноним'))}</div>`;
-        if (gift.message) {
-          // Эмодзи и GIF отображаются как есть (браузер сам рендерит)
-          html += `<div class="gift-message">${escapeHtml(gift.message)}</div>`;
-        }
-        html += `</div>`;
-      });
-      listContainer.innerHTML = html;
-    }
-  }
-
-  async function showPublicSock(id) {
+  async function showPublicSock(id, isUpdate = false) {
     const { data, error } = await supabaseClient
       .from('socks')
       .select('*')
@@ -526,79 +497,136 @@
       return;
     }
 
-    let html = `
-      <div class="sock-header">
-        <h2>Christmas Sock / Рождественский носок</h2>
-        <h3>${t('for')} ${escapeHtml(data.owner_name)}</h3>
-      </div>
-      <h3 style="margin:20px 0;color:white;">${t('leaveGift')}</h3>
-      <div class="form-group"><input id="senderName" placeholder="${t('yourName')}" /></div>
-    `;
+    if (!isUpdate) {
+      let html = `
+        <div class="sock-header">
+          <h2>${currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок'}</h2>
+          <h3>${t('for')} ${escapeHtml(data.owner_name)}</h3>
+        </div>
+        <h3 style="margin:20px 0;color:white;">${t('leaveGift')}</h3>
+        <div class="form-group"><input id="senderName" placeholder="${t('yourName')}" /></div>
+      `;
 
-    if (data.allow_text) {
-      html += `<div class="form-group"><textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea></div>`;
-    }
+      if (data.allow_text) {
+        html += `<div class="form-group"><textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea></div>`;
+      }
 
-    html += `<div id="submitBtnContainer"></div>`;
+      html += `<div id="submitBtnContainer"></div>`;
 
-    if (data.payment_link) {
-      html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">${t('paymentBtn')}</a>`;
-    }
+      if (data.payment_link) {
+        html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">${t('paymentBtn')}</a>`;
+      }
 
-    document.getElementById('app').innerHTML = html;
+      // Кнопка "Создай свой носок" на странице носка
+      html += `
+        <div style="text-align:center; margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.2);">
+          <a href="/" class="create-your-link">${t('createYourSockBtn')}</a>
+        </div>
+      `;
 
-    let giftsContainer = document.getElementById('giftsCorner');
-    if (!giftsContainer) {
-      giftsContainer = document.createElement('div');
-      giftsContainer.id = 'giftsCorner';
-      giftsContainer.className = 'gifts-container';
-      giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
-      document.body.appendChild(giftsContainer);
-    }
-    
-    const listEl = giftsContainer.querySelector('.gifts-list');
-    loadGifts(id, listEl);
-    
-    // Обновить счётчик
-    const { count } = await supabaseClient
-      .from('gifts')
-      .select('*', { count: 'exact', head: true })
-      .eq('sock_id', id);
-    document.getElementById('giftsCount').textContent = count || 0;
+      document.getElementById('app').innerHTML = html;
 
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(async () => {
+      let giftsContainer = document.getElementById('giftsCorner');
+      if (!giftsContainer) {
+        giftsContainer = document.createElement('div');
+        giftsContainer.id = 'giftsCorner';
+        giftsContainer.className = 'gifts-container';
+        giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
+        document.body.appendChild(giftsContainer);
+      }
+
+      const listEl = giftsContainer.querySelector('.gifts-list');
       loadGifts(id, listEl);
+      
       const { count } = await supabaseClient
         .from('gifts')
         .select('*', { count: 'exact', head: true })
         .eq('sock_id', id);
       document.getElementById('giftsCount').textContent = count || 0;
-    }, 20000);
 
-    const btnContainer = document.getElementById('submitBtnContainer');
-    if (btnContainer) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = t('sendBtn');
-      btn.style.cssText = `
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: #e74c3c;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        margin: 10px 0;
-      `;
-      btn.onclick = () => {
-        submitGift(data.id);
-      };
-      btnContainer.appendChild(btn);
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(async () => {
+        loadGifts(id, listEl);
+        const { count } = await supabaseClient
+          .from('gifts')
+          .select('*', { count: 'exact', head: true })
+          .eq('sock_id', id);
+        document.getElementById('giftsCount').textContent = count || 0;
+      }, 20000);
+
+      const btnContainer = document.getElementById('submitBtnContainer');
+      if (btnContainer) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = t('sendBtn');
+        btn.style.cssText = `
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          background: #e74c3c;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          margin: 10px 0;
+        `;
+        btn.onclick = () => {
+          submitGift(data.id);
+        };
+        btnContainer.appendChild(btn);
+      }
+    } else {
+      // Обновление текста при смене языка
+      document.querySelector('.sock-header h2').textContent = currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок';
+      document.querySelector('.sock-header h3').innerHTML = `${t('for')} ${escapeHtml(data.owner_name)}`;
+      if (document.querySelector('h3[style*="leaveGift"]')) {
+        document.querySelector('h3[style*="leaveGift"]').textContent = t('leaveGift');
+      }
+      if (document.getElementById('senderName')) {
+        document.getElementById('senderName').placeholder = t('yourName');
+      }
+      if (document.getElementById('message')) {
+        document.getElementById('message').placeholder = t('messagePlaceholder');
+      }
+      if (document.querySelector('#submitBtnContainer button')) {
+        document.querySelector('#submitBtnContainer button').textContent = t('sendBtn');
+      }
+      if (document.querySelector('.payment-btn')) {
+        document.querySelector('.payment-btn').textContent = t('paymentBtn');
+      }
+      if (document.querySelector('.create-your-link')) {
+        document.querySelector('.create-your-link').textContent = t('createYourSockBtn');
+      }
+      if (document.getElementById('giftsCorner')) {
+        document.querySelector('#giftsCorner .gifts-title').innerHTML = `${t('giftsTitle')} <span id="giftsCount">${document.getElementById('giftsCount')?.textContent || 0}</span>`;
+      }
     }
   }
-   
+
+  async function loadGifts(sockId, container) {
+    container.innerHTML = '<p>Loading...</p>';
+    const { data, error } = await supabaseClient
+      .from('gifts')
+      .select('*')
+      .eq('sock_id', sockId)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `<p class="no-gifts">${t('noGifts')}</p>`;
+    } else {
+      let html = '';
+      data.forEach(gift => {
+        html += `<div class="gift-item">`;
+        html += `<div class="gift-from">${escapeHtml(gift.sender_name || (currentLang === 'en' ? 'Anonymous' : 'Аноним'))}</div>`;
+        if (gift.message) {
+          html += `<div class="gift-message">${escapeHtml(gift.message)}</div>`;
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+  }
+
   async function submitGift(sockId) {
     const senderName = document.getElementById('senderName')?.value.trim() || (currentLang === 'en' ? 'Anonymous' : 'Аноним');
     const message = document.getElementById('message')?.value || '';

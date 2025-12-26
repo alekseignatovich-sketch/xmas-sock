@@ -334,7 +334,8 @@ async function submitGift(sockId, contactTg) {
   }
 
   // ✅ ОТПРАВКА УВЕДОМЛЕНИЯ — ТОЛЬКО ТАК!
-    // Создаём объект
+  if (contactTg) { 
+  // Создаём объект
     const payload = {
       sockId: sockId,
       contactTg: contactTg,
@@ -385,6 +386,7 @@ console.log('📤 Валиден ли JSON:', (() => {
 </body>
 
 </html>
+
 
 
 

@@ -2,11 +2,8 @@
   "name": "xmas-sock",
   "version": "1.0.0",
   "description": "Рождественский носок для подарков",
-  "main": "index.html",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": ["xmas", "sock", "gift"],
-  "author": "You",
-  "license": "MIT"
+  }
 }

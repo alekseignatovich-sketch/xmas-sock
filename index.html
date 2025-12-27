@@ -122,6 +122,7 @@
       font-family: inherit;
     }
 
+    /* Подсказка ПОД полем ID */
     .id-hint {
       font-size: 14px;
       color: #aaa;
@@ -169,6 +170,7 @@
       font-family: inherit;
     }
 
+    /* Кнопка эмодзи */
     .emoji-toggle {
       position: absolute;
       right: 12px;
@@ -186,6 +188,7 @@
       z-index: 5;
     }
 
+    /* Панель эмодзи — теперь над полем */
     .emoji-panel {
       position: absolute;
       background: white;
@@ -221,6 +224,7 @@
       background: #f0f0f0;
     }
 
+    /* Скроллбар панели эмодзи */
     .emoji-panel::-webkit-scrollbar {
       width: 6px;
     }
@@ -235,7 +239,7 @@
 
     .gifts-container {
       position: fixed;
-      bottom: 140px;
+      bottom: 20px;
       right: 20px;
       width: 70%;
       max-width: 400px;
@@ -320,8 +324,8 @@
     }
 
     @media (max-width: 600px) {
-      .gifts-container {
-        bottom: 120px;
+      .gifts-container, .create-your-link {
+        bottom: 10px;
         right: 10px;
         left: 10px;
         width: calc(100% - 20px);
@@ -341,53 +345,6 @@
   </style>
 </head>
 <body>
-
-  <!-- SVG-бэкграунд со снеговиками -->
-  <div style="position:fixed;bottom:0;left:0;width:100%;height:120px;pointer-events:none;z-index:-1;overflow:hidden;">
-    <svg width="100%" height="100%" viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <g id="snowman-pair">
-          <!-- Снеговик 1 -->
-          <circle cx="100" cy="70" r="15" fill="white" />
-          <circle cx="100" cy="45" r="12" fill="white" />
-          <circle cx="100" cy="25" r="10" fill="white" />
-          <circle cx="95" cy="22" r="1.5" fill="#333" />
-          <circle cx="105" cy="22" r="1.5" fill="#333" />
-          <polygon points="100,25 100,30 106,27" fill="orange" />
-          <rect x="85" y="40" width="30" height="6" fill="#e74c3c" rx="2" />
-          <rect x="110" y="40" width="6" height="25" fill="#e74c3c" />
-          <rect x="92" y="10" width="16" height="6" fill="#333" />
-          <rect x="85" y="12" width="30" height="3" fill="#333" />
-          <!-- Снеговик 2 -->
-          <circle cx="200" cy="70" r="15" fill="white" />
-          <circle cx="200" cy="45" r="12" fill="white" />
-          <circle cx="200" cy="25" r="10" fill="white" />
-          <circle cx="195" cy="22" r="1.5" fill="#333" />
-          <circle cx="205" cy="22" r="1.5" fill="#333" />
-          <polygon points="200,25 200,30 206,27" fill="orange" />
-          <rect x="185" y="40" width="30" height="6" fill="#3498db" rx="2" />
-          <rect x="210" y="40" width="6" height="25" fill="#3498db" />
-          <circle cx="200" cy="10" r="4" fill="#333" />
-          <!-- Снежки -->
-          <circle cx="130" cy="50" r="5" fill="white" opacity="0.9">
-            <animate attributeName="cy" values="50;30;10" dur="2s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.9;0.6;0" dur="2s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="180" cy="50" r="5" fill="white" opacity="0.9">
-            <animate attributeName="cy" values="50;30;10" dur="2.2s" repeatCount="indefinite" begin="0.5s" />
-            <animate attributeName="opacity" values="0.9;0.6;0" dur="2.2s" repeatCount="indefinite" begin="0.5s" />
-          </circle>
-        </g>
-      </defs>
-      <use href="#snowman-pair" x="0" y="0">
-        <animate attributeName="x" from="-300" to="1200" dur="25s" repeatCount="indefinite" />
-      </use>
-      <use href="#snowman-pair" x="0" y="0">
-        <animate attributeName="x" from="-600" to="900" dur="30s" repeatCount="indefinite" begin="5s" />
-      </use>
-    </svg>
-  </div>
-
   <div class="lang-switcher">
     <button class="lang-btn active" data-lang="ru">RU</button>
     <button class="lang-btn" data-lang="en">EN</button>
@@ -465,17 +422,32 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const EMOJIS = [
-    '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
-    '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
-    '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
-    '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
-    '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
-    '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
-    '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
-    '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
-    '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
-  ];
+const EMOJIS = [
+  // 🎄 Рождество и зима
+  '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
+  
+  // ❤️ Эмоции и сердца
+  '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
+  
+  // 👨‍👩‍👧 Люди и семья
+  '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
+  
+  // 🌟 Природа и небо
+  '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
+  
+  // 🎁 Подарки, еда, напитки
+  '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
+  
+  // ✨ Магия и веселье
+  '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
+  
+  // 🎶 Музыка и танцы
+  '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
+  
+  // 💫 Дополнительные праздничные
+  '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
+  '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
+];
 
   function setLanguage(lang) {
     currentLang = lang;
@@ -518,6 +490,26 @@
       snowContainer.appendChild(snowflake);
     }
   }
+  createSnowflakes();
+
+  async function generateUniqueSockId() {
+    const { count, error } = await supabaseClient
+      .from('socks')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) return 'sock1';
+    return `sock${(count || 0) + 1}`;
+  }
+
+  const path = window.location.pathname;
+  const id = path === '/' ? null : path.substring(1);
+  (async () => {
+    if (id && id.length > 0) {
+      await showPublicSock(id);
+    } else {
+      showCreateForm();
+    }
+  })();
 
   function escapeHtml(text) {
     if (typeof text !== 'string') return '';
@@ -531,14 +523,6 @@
 
   function t(key) {
     return translations[currentLang][key] || key;
-  }
-
-  async function generateUniqueSockId() {
-    const { count, error } = await supabaseClient
-      .from('socks')
-      .select('*', { count: 'exact', head: true });
-    if (error) return 'sock1';
-    return `sock${(count || 0) + 1}`;
   }
 
   async function showCreateForm() {
@@ -593,7 +577,9 @@
     }
 
     const url = window.location.origin + '/' + sockId;
-    document.getElementById('app').innerHTML = `
+
+    const app = document.getElementById('app');
+    app.innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
         <p>${t('successDesc')}</p>
@@ -607,6 +593,7 @@
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Скопировано!');
       }).catch(err => {
+        console.error('Ошибка копирования:', err);
         alert('Не удалось скопировать');
       });
     });
@@ -653,6 +640,7 @@
     }
 
     document.getElementById('app').innerHTML = html;
+
     initEmojiPanel();
 
     let createBtn = document.getElementById('createYourBtn');
@@ -674,6 +662,7 @@
 
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
+    
     const { count } = await supabaseClient
       .from('gifts')
       .select('*', { count: 'exact', head: true })
@@ -705,7 +694,9 @@
         cursor: pointer;
         margin: 10px 0;
       `;
-      btn.onclick = () => { submitGift(data.id); };
+      btn.onclick = () => {
+        submitGift(data.id);
+      };
       btnContainer.appendChild(btn);
     }
   }
@@ -714,6 +705,7 @@
     const messageField = document.getElementById('message');
     const emojiToggle = document.querySelector('.emoji-toggle');
     const emojiPanel = document.getElementById('emojiPanel');
+
     let closeTimeout = null;
 
     let emojiGrid = '<div class="emoji-grid">';
@@ -727,6 +719,7 @@
       emojiPanel.style.display = 'none';
       if (closeTimeout) clearTimeout(closeTimeout);
     }
+
     function openPanel() {
       emojiPanel.style.display = 'block';
       if (closeTimeout) clearTimeout(closeTimeout);
@@ -734,13 +727,21 @@
 
     emojiToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (emojiPanel.style.display === 'block') closePanel();
-      else openPanel();
+      if (emojiPanel.style.display === 'block') {
+        closePanel();
+      } else {
+        openPanel();
+      }
     });
 
-    const handleMouseEnter = () => { if (closeTimeout) clearTimeout(closeTimeout); };
+    const handleMouseEnter = () => {
+      if (closeTimeout) clearTimeout(closeTimeout);
+    };
+
     const handleMouseLeave = () => {
-      closeTimeout = setTimeout(() => closePanel(), 500);
+      closeTimeout = setTimeout(() => {
+        closePanel();
+      }, 500);
     };
 
     emojiToggle.addEventListener('mouseenter', handleMouseEnter);
@@ -837,20 +838,7 @@
     const gifts = document.getElementById('giftsCorner');
     if (gifts) gifts.remove();
   });
-
-  // === ЗАПУСК ===
-  document.addEventListener('DOMContentLoaded', async () => {
-    createSnowflakes();
-
-    const path = window.location.pathname;
-    const id = path === '/' ? null : path.substring(1);
-    if (id && id.length > 0) {
-      await showPublicSock(id);
-    } else {
-      showCreateForm();
-    }
-  });
 </script>
-
 </body>
 </html>
+

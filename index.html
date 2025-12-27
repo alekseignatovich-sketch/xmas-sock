@@ -473,15 +473,15 @@ const EMOJIS = [
 
   function createSnowflakes() {
     const snowContainer = document.getElementById('snowflakes');
-    const snowflakeCount = 120;
+    const snowflakeCount = 360;
     for (let i = 0; i < snowflakeCount; i++) {
       const snowflake = document.createElement('div');
       snowflake.classList.add('snowflake');
-      const size = Math.random() * 4 + 2;
+      const size = Math.random() * 6 + 2;
       snowflake.style.width = `${size}px`;
       snowflake.style.height = `${size}px`;
       snowflake.style.left = `${Math.random() * 100}vw`;
-      const duration = Math.random() * 12 + 8;
+      const duration = Math.random() * 6 + 4;
       const delay = Math.random() * 5;
       const drift = (Math.random() - 0.5) * 100;
       snowflake.style.setProperty('--drift', `${drift}px`);
@@ -841,5 +841,6 @@ const EMOJIS = [
 </script>
 </body>
 </html>
+
 
 

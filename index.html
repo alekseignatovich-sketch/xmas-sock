@@ -11,7 +11,694 @@
       --main: #e74c3c;
       --light: #fdf6f0;
       --dark: #2c3e50;
+      --success: #27ae60;<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title id="page-title">Рождественский носок</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main: #e74c3c;
+      --light: #fdf6f0;
+      --dark: #2c3e50;
       --success: #27ae60;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0c1e3e, #2c3e50);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ЯЗЫК */
+    .lang-switcher {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 100;
+      background: rgba(255,255,255,0.9);
+      padding: 4px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .lang-btn {
+      padding: 4px 8px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .lang-btn.active {
+      background: var(--main);
+      color: white;
+    }
+
+    /* СНЕГ */
+    .snowflakes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .snowflake {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.85;
+      filter: blur(0.8px);
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg) translateX(var(--drift));
+      }
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Mountains of Christmas', cursive;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .sock-header {
+      background: var(--main);
+      color: white;
+      padding: 25px;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sock-header h1 {
+      font-size: 2.4em;
+    }
+
+    .sock-header p {
+      font-size: 1.5em;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .create-sock-btn {
+      background: var(--main);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .success {
+      background: rgba(213, 245, 227, 0.95);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .payment-btn {
+      background: #f39c12;
+      padding: 14px;
+      font-size: 18px;
+      text-align: center;
+      margin: 20px 0;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-block;
+      width: 100%;
+      font-weight: bold;
+      font-family: inherit;
+    }
+
+    /* Блок подарков */
+    .gifts-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 70%;
+      max-width: 400px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      z-index: 10;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(231, 76, 60, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gifts-title {
+      font-weight: bold;
+      color: var(--main);
+      margin-bottom: 10px;
+      font-size: 1.1em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .gifts-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .gift-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .gift-item:last-child {
+      border-bottom: none;
+    }
+
+    .gift-from {
+      font-weight: bold;
+      color: #2c3e50;
+      font-size: 1.05em;
+    }
+
+    .gift-message {
+      margin-top: 6px;
+      font-size: 1em;
+      color: #444;
+      line-height: 1.4;
+    }
+
+    .no-gifts {
+      color: #888;
+      font-style: italic;
+      text-align: center;
+      font-size: 0.95em;
+      padding-top: 30px;
+    }
+
+    .gifts-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .gifts-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .gifts-list::-webkit-scrollbar-thumb {
+      background: #c0392b;
+      border-radius: 3px;
+    }
+
+    /* Кнопка "Создай свой носок" — в левом нижнем углу */
+    .create-your-link {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #3498db;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 600px) {
+      .gifts-container, .create-your-link {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+      }
+      .create-your-link {
+        width: auto;
+        text-align: center;
+      }
+      .lang-switcher {
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="ru">RU</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
+  <div class="snowflakes" id="snowflakes"></div>
+  <div class="container" id="app">
+    <h2>Loading...</h2>
+  </div>
+
+<script>
+  const translations = {
+    ru: {
+      title: 'Рождественский носок',
+      titleCreate: '🎄 Создай свой носок',
+      descCreate: 'Друзья смогут оставить Вам поздравления и подарочки',
+      placeholderId: 'Уникальное имя (латиницей): например, ivan2025',
+      placeholderName: 'Твоё имя (для приветствия)',
+      placeholderPayment: 'Ссылка для перевода (PayPal, Revolut и т.д.)',
+      createBtn: 'Создать носок',
+      successTitle: '✅ Готово!',
+      successDesc: 'Твой носок создан:',
+      copyBtn: 'Скопировать ссылку',
+      share: 'Размести её в соцсетях!',
+      notFound: 'Носок не найден ❄️',
+      createYour: 'Создать свой',
+      for: 'для',
+      leaveGift: 'Оставь подарок!',
+      yourName: 'Твоё имя',
+      messagePlaceholder: 'Поздравление с Новым годом и Рождеством... (эмодзи и GIF разрешены!)',
+      sendBtn: 'Отправить подарок',
+      paymentBtn: '🎁 Отправить денежный подарок',
+      createYourSockBtn: 'Создай свой носок и получай поздравления!',
+      giftsTitle: '🎁 Подарков:',
+      noGifts: 'Пока нет подарков',
+      alertFill: 'Заполни обязательные поля!',
+      alertIdFormat: 'ID может содержать только буквы, цифры, _ и -',
+      alertError: 'Ошибка! Такой носок уже есть?',
+      alertSent: '🎁 Подарок отправлен!',
+      alertSendError: 'Ошибка отправки'
+    },
+    en: {
+      title: 'Christmas Sock',
+      titleCreate: '🎄 Create your sock',
+      descCreate: 'Friends can leave you greetings and little gifts',
+      placeholderId: 'Unique name (Latin): e.g., ivan2025',
+      placeholderName: 'Your name (for greeting)',
+      placeholderPayment: 'Payment link (PayPal, Revolut, etc.)',
+      createBtn: 'Create Sock',
+      successTitle: '✅ Done!',
+      successDesc: 'Your sock is ready:',
+      copyBtn: 'Copy link',
+      share: 'Share it on social media!',
+      notFound: 'Sock not found ❄️',
+      createYour: 'Create your own',
+      for: 'for',
+      leaveGift: 'Leave a gift!',
+      yourName: 'Your name',
+      messagePlaceholder: 'New Year & Christmas greeting... (emojis & GIFs allowed!)',
+      sendBtn: 'Send gift',
+      paymentBtn: '🎁 Send monetary gift',
+      createYourSockBtn: 'Create your sock and receive greetings!',
+      giftsTitle: '🎁 Gifts:',
+      noGifts: 'No gifts yet',
+      alertFill: 'Please fill required fields!',
+      alertIdFormat: 'ID can only contain letters, digits, _ and -',
+      alertError: 'Error! Sock already exists?',
+      alertSent: '🎁 Gift sent!',
+      alertSendError: 'Send error'
+    }
+  };
+
+  let currentLang = 'ru';
+  let autoRefreshInterval = null;
+  const SUPABASE_URL = 'https://cpuoiglvjpiuwqfqvkkw.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    document.getElementById('page-title').textContent = translations[lang].title;
+    updateUI();
+  }
+
+  function updateUI() {
+    const path = window.location.pathname;
+    const id = path === '/' ? null : path.substring(1);
+    if (id && id.length > 0) {
+      showPublicSock(id, true);
+    } else {
+      showCreateForm();
+    }
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLanguage(btn.dataset.lang);
+    });
+  });
+
+  function createSnowflakes() {
+    const snowContainer = document.getElementById('snowflakes');
+    const snowflakeCount = 60;
+    for (let i = 0; i < snowflakeCount; i++) {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      const size = Math.random() * 6 + 2;
+      snowflake.style.width = `${size}px`;
+      snowflake.style.height = `${size}px`;
+      snowflake.style.left = `${Math.random() * 100}vw`;
+      const duration = Math.random() * 12 + 8;
+      const delay = Math.random() * 5;
+      const drift = (Math.random() - 0.5) * 100;
+      snowflake.style.setProperty('--drift', `${drift}px`);
+      snowflake.style.animationDuration = `${duration}s`;
+      snowflake.style.animationDelay = `${delay}s`;
+      snowContainer.appendChild(snowflake);
+    }
+  }
+  createSnowflakes();
+
+  // === ГЕНЕРАЦИЯ УНИКАЛЬНОГО ИМЕНИ ===
+  async function generateUniqueSockId() {
+    const { data, error } = await supabaseClient
+      .from('socks')
+      .select('id', { count: 'exact', head: true });
+
+    if (error) return 'sock1';
+    const count = data?.length || 0;
+    return `sock${count + 1}`;
+  }
+
+  const path = window.location.pathname;
+  const id = path === '/' ? null : path.substring(1);
+  (async () => {
+    if (id && id.length > 0) {
+      await showPublicSock(id);
+    } else {
+      showCreateForm();
+    }
+  })();
+
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function t(key) {
+    return translations[currentLang][key] || key;
+  }
+
+  async function showCreateForm() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    
+    // Генерируем уникальное имя
+    const uniqueId = await generateUniqueSockId();
+
+    document.getElementById('app').innerHTML = `
+      <div class="sock-header">
+        <h1>${t('titleCreate')}</h1>
+        <p>${t('descCreate')}</p>
+      </div>
+      <div class="form-group">
+        <input id="sockId" value="${uniqueId}" placeholder="${t('placeholderId')}" />
+      </div>
+      <div class="form-group">
+        <input id="ownerName" placeholder="${t('placeholderName')}" />
+      </div>
+      <div class="form-group">
+        <input id="paymentLink" placeholder="${t('placeholderPayment')}" />
+      </div>
+      <button class="create-sock-btn" onclick="createSock()">${t('createBtn')}</button>
+    `;
+  }
+
+  async function createSock() {
+    const sockId = document.getElementById('sockId').value.trim();
+    const ownerName = document.getElementById('ownerName').value.trim();
+    const paymentLink = document.getElementById('paymentLink').value.trim();
+    
+    if (!sockId || !ownerName) { 
+      alert(t('alertFill')); 
+      return; 
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(sockId)) { 
+      alert(t('alertIdFormat')); 
+      return; 
+    }
+
+    const { error } = await supabaseClient
+      .from('socks')
+      .insert([{
+        id: sockId,
+        owner_name: ownerName,
+        allow_text: true, // всегда разрешено
+        payment_link: paymentLink || null
+      }]);
+
+    if (error) { 
+      alert(t('alertError')); 
+      return; 
+    }
+
+    const url = window.location.origin + '/' + sockId;
+    document.getElementById('app').innerHTML = `
+      <div class="success">
+        <h2>${t('successTitle')}</h2>
+        <p>${t('successDesc')}</p>
+        <div style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
+        <button onclick="navigator.clipboard.writeText('${url}')">${t('copyBtn')}</button>
+        <p style="margin-top:15px;font-size:14px;color:#666;">${t('share')}</p>
+      </div>
+    `;
+  }
+
+  async function showPublicSock(id, isUpdate = false) {
+    const { data, error } = await supabaseClient
+      .from('socks')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      document.getElementById('app').innerHTML = `
+        <div class="sock-header">
+          <h2>${t('notFound')}</h2>
+          <p><a href="/" style="color:white;text-decoration:underline;">${t('createYour')}</a></p>
+        </div>
+      `;
+      return;
+    }
+
+    if (!isUpdate) {
+      let html = `
+        <div class="sock-header">
+          <h2>${currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок'}</h2>
+          <h3>${t('for')} ${escapeHtml(data.owner_name)}</h3>
+        </div>
+        <h3 style="margin:20px 0;color:white;">${t('leaveGift')}</h3>
+        <div class="form-group"><input id="senderName" placeholder="${t('yourName')}" /></div>
+        <div class="form-group"><textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea></div>
+        <div id="submitBtnContainer"></div>
+      `;
+
+      if (data.payment_link) {
+        html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">${t('paymentBtn')}</a>`;
+      }
+
+      document.getElementById('app').innerHTML = html;
+
+      // Кнопка "Создай свой носок" — в левом нижнем углу (фиксированная)
+      let createBtn = document.getElementById('createYourBtn');
+      if (!createBtn) {
+        createBtn = document.createElement('a');
+        createBtn.id = 'createYourBtn';
+        createBtn.href = '/';
+        createBtn.className = 'create-your-link';
+        createBtn.textContent = t('createYourSockBtn');
+        document.body.appendChild(createBtn);
+      }
+
+      let giftsContainer = document.getElementById('giftsCorner');
+      if (!giftsContainer) {
+        giftsContainer = document.createElement('div');
+        giftsContainer.id = 'giftsCorner';
+        giftsContainer.className = 'gifts-container';
+        giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
+        document.body.appendChild(giftsContainer);
+      }
+
+      const listEl = giftsContainer.querySelector('.gifts-list');
+      loadGifts(id, listEl);
+      
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', id);
+      document.getElementById('giftsCount').textContent = count || 0;
+
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(async () => {
+        loadGifts(id, listEl);
+        const { count } = await supabaseClient
+          .from('gifts')
+          .select('*', { count: 'exact', head: true })
+          .eq('sock_id', id);
+        document.getElementById('giftsCount').textContent = count || 0;
+      }, 20000);
+
+      const btnContainer = document.getElementById('submitBtnContainer');
+      if (btnContainer) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = t('sendBtn');
+        btn.style.cssText = `
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          background: #e74c3c;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+          margin: 10px 0;
+        `;
+        btn.onclick = () => {
+          submitGift(data.id);
+        };
+        btnContainer.appendChild(btn);
+      }
+    } else {
+      // Обновление при смене языка
+      document.querySelector('.sock-header h2').textContent = currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок';
+      document.querySelector('.sock-header h3').innerHTML = `${t('for')} ${escapeHtml(data.owner_name)}`;
+      if (document.querySelector('h3[style*="leaveGift"]')) {
+        document.querySelector('h3[style*="leaveGift"]').textContent = t('leaveGift');
+      }
+      if (document.getElementById('senderName')) {
+        document.getElementById('senderName').placeholder = t('yourName');
+      }
+      if (document.getElementById('message')) {
+        document.getElementById('message').placeholder = t('messagePlaceholder');
+      }
+      if (document.querySelector('#submitBtnContainer button')) {
+        document.querySelector('#submitBtnContainer button').textContent = t('sendBtn');
+      }
+      if (document.querySelector('.payment-btn')) {
+        document.querySelector('.payment-btn').textContent = t('paymentBtn');
+      }
+      const createBtn = document.getElementById('createYourBtn');
+      if (createBtn) {
+        createBtn.textContent = t('createYourSockBtn');
+      }
+      if (document.getElementById('giftsCorner')) {
+        document.querySelector('#giftsCorner .gifts-title').innerHTML = `${t('giftsTitle')} <span id="giftsCount">${document.getElementById('giftsCount')?.textContent || 0}</span>`;
+      }
+    }
+  }
+
+  async function loadGifts(sockId, container) {
+    container.innerHTML = '<p>Loading...</p>';
+    const { data, error } = await supabaseClient
+      .from('gifts')
+      .select('*')
+      .eq('sock_id', sockId)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      container.innerHTML = `<p class="no-gifts">${t('noGifts')}</p>`;
+    } else {
+      let html = '';
+      data.forEach(gift => {
+        html += `<div class="gift-item">`;
+        html += `<div class="gift-from">${escapeHtml(gift.sender_name || (currentLang === 'en' ? 'Anonymous' : 'Аноним'))}</div>`;
+        if (gift.message) {
+          html += `<div class="gift-message">${escapeHtml(gift.message)}</div>`;
+        }
+        html += `</div>`;
+      });
+      container.innerHTML = html;
+    }
+  }
+
+  async function submitGift(sockId) {
+    const senderName = document.getElementById('senderName')?.value.trim() || (currentLang === 'en' ? 'Anonymous' : 'Аноним');
+    const message = document.getElementById('message')?.value || '';
+
+    const { error: giftError } = await supabaseClient
+      .from('gifts')
+      .insert([{ 
+        sock_id: sockId, 
+        sender_name: senderName,
+        message: message || null
+      }]);
+
+    if (giftError) {
+      alert(t('alertSendError'));
+      return;
+    }
+
+    alert(t('alertSent'));
+    if (document.getElementById('senderName')) document.getElementById('senderName').value = '';
+    if (document.getElementById('message')) document.getElementById('message').value = '';
+
+    const listEl = document.querySelector('#giftsCorner .gifts-list');
+    if (listEl) {
+      loadGifts(sockId, listEl);
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', sockId);
+      document.getElementById('giftsCount').textContent = count || 0;
+    }
+  }
+
+  window.addEventListener('beforeunload', () => {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    // Убираем кнопку при уходе (чистота)
+    const btn = document.getElementById('createYourBtn');
+    if (btn) btn.remove();
+  });
+</script>
+</body>
+</html>
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -665,3 +1352,4 @@
 </script>
 </body>
 </html>
+

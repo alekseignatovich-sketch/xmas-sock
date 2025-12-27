@@ -601,24 +601,39 @@ container.style.cssText = `
 `;
 
     // Изображение (можно заменить URL)
-    const img = document.createElement('img');
-    img.src = './present.gif?' + Math.random();
-    img.alt = 'Подарок';
-    img.style.width = '60px';
-    img.style.height = 'auto';
-    img.style.marginBottom = '8px';
-    img.style.borderRadius = '8px';
-    img.style.maxWidth = '100%';
-    
+let createBtn = document.getElementById('createYourBtn');
+if (createBtn) createBtn.remove();
 
-    const btn = document.createElement('a');
-    btn.href = '/';
-    btn.className = 'create-your-link';
-    btn.textContent = t('createYourSockBtn');
+const container = document.createElement('div');
+container.id = 'createYourBtn';
+container.style.cssText = `
+  position: fixed;
+  bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  max-width: calc(100% - 40px);
+`;
 
-    container.appendChild(img);
-    container.appendChild(btn);
-    document.body.appendChild(container);
+const img = document.createElement('img');
+img.src = './present.gif?' + Math.random();
+img.alt = 'Подарок';
+img.style.width = '60px';
+img.style.height = 'auto';
+img.style.marginBottom = '8px';
+img.style.borderRadius = '8px';
+img.style.maxWidth = '100%'; // ← защищает на узких экранах
+
+const btn = document.createElement('a');
+btn.href = '/';
+btn.className = 'create-your-link';
+btn.textContent = t('createYourSockBtn');
+
+container.appendChild(img);
+container.appendChild(btn);
+document.body.appendChild(container);
 
     // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
@@ -804,6 +819,7 @@ container.style.cssText = `
 
 </body>
 </html>
+
 
 
 

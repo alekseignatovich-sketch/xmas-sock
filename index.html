@@ -219,14 +219,14 @@
       border-radius: 3px;
     }
 
-    /* Блок подарков — 1.5 × от уменьшенного */
+    /* Блок подарков — 1.5× */
     .gifts-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
       width: 70%;
       max-width: 400px;
-      height: 165px; /* 110px * 1.5 */
+      height: 165px;
       background: rgba(255, 255, 255, 0.94);
       border-radius: 12px;
       padding: 12px;
@@ -296,18 +296,18 @@
       border-radius: 3px;
     }
 
+    /* Кнопка — как раньше (без position) */
     .create-your-link {
       background: #3498db;
       color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 14px;
       display: inline-block;
       text-align: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-      margin-top: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 600px) {
@@ -582,9 +582,11 @@
     document.getElementById('app').innerHTML = html;
     initEmojiPanel();
 
+    // Удаляем старую кнопку
     let createBtn = document.getElementById('createYourBtn');
     if (createBtn) createBtn.remove();
 
+    // Контейнер: изображение + кнопка
     const container = document.createElement('div');
     container.id = 'createYourBtn';
     container.style.cssText = `
@@ -597,36 +599,26 @@
       z-index: 10;
     `;
 
-    // Подарочная коробка — 2× больше + бант
-    const box = document.createElement('div');
-    box.innerHTML = `
-      <svg width="100" height="80" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
-        <!-- Коробка -->
-        <rect x="10" y="20" width="80" height="50" rx="6" fill="#e74c3c" stroke="#c0392b" stroke-width="2.5"/>
-        <!-- Крышка -->
-        <rect x="5" y="10" width="90" height="15" rx="4" fill="#e74c3c" stroke="#c0392b" stroke-width="2.5"/>
-        <!-- Лента вертикальная -->
-        <rect x="47" y="5" width="6" height="70" fill="#f1c40f" rx="3"/>
-        <!-- Лента горизонтальная -->
-        <rect x="20" y="42" width="60" height="6" fill="#f1c40f" rx="3"/>
-        <!-- Бант -->
-        <circle cx="50" cy="45" r="6" fill="#f1c40f"/>
-        <path d="M42,35 Q50,25 58,35 Q50,30 42,35" fill="#f1c40f"/>
-        <path d="M42,55 Q50,65 58,55 Q50,60 42,55" fill="#f1c40f"/>
-      </svg>
-    `;
-    box.style.marginBottom = '10px';
+    // Изображение (можно заменить URL)
+    const img = document.createElement('img');
+    img.src = 'https://media.giphy.com/media/3o7TKua8n92lXQ8O0c/giphy.gif';
+    img.alt = 'Подарок';
+    img.style.width = '60px';
+    img.style.height = '60px';
+    img.style.marginBottom = '8px';
+    img.style.borderRadius = '8px';
+    img.style.objectFit = 'cover';
 
     const btn = document.createElement('a');
     btn.href = '/';
     btn.className = 'create-your-link';
     btn.textContent = t('createYourSockBtn');
-    btn.style.width = '120px';
 
-    container.appendChild(box);
+    container.appendChild(img);
     container.appendChild(btn);
     document.body.appendChild(container);
 
+    // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
     giftsContainer = document.createElement('div');
@@ -638,8 +630,19 @@
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
 
+    // Функция обновления счётчика
+    async function updateGiftCount() {
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', id);
+      document.getElementById('giftsCount').textContent = count || 0;
+    }
+
+    updateGiftCount();
     autoRefreshInterval = setInterval(async () => {
       loadGifts(id, listEl);
+      updateGiftCount();
     }, 20000);
 
     const btnContainer = document.getElementById('submitBtnContainer');

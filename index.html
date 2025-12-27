@@ -188,36 +188,53 @@
       z-index: 5;
     }
 
-    /* Панель эмодзи */
+    /* Панель эмодзи — теперь над полем */
     .emoji-panel {
       position: absolute;
       background: white;
       border: 1px solid #ddd;
       border-radius: 8px;
-      padding: 10px;
+      padding: 8px;
       z-index: 1000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       display: none;
-      max-height: 200px;
+      max-height: 180px;
       overflow-y: auto;
+      width: calc(100% - 2px);
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 5px;
     }
 
     .emoji-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 4px;
     }
 
     .emoji-item {
       text-align: center;
-      padding: 6px;
+      padding: 4px;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
-      font-size: 18px;
+      font-size: 16px;
     }
     .emoji-item:hover {
       background: #f0f0f0;
+    }
+
+    /* Скроллбар панели эмодзи */
+    .emoji-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .emoji-panel::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .emoji-panel::-webkit-scrollbar-thumb {
+      background: #c0392b;
+      border-radius: 3px;
     }
 
     .gifts-container {
@@ -322,7 +339,7 @@
         right: 10px;
       }
       .emoji-grid {
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(10, 1fr);
       }
     }
   </style>
@@ -604,10 +621,8 @@
 
     document.getElementById('app').innerHTML = html;
 
-    // Инициализация панели эмодзи
     initEmojiPanel();
 
-    // Кнопка "Создай свой носок"
     let createBtn = document.getElementById('createYourBtn');
     if (createBtn) createBtn.remove();
     createBtn = document.createElement('a');
@@ -617,7 +632,6 @@
     createBtn.textContent = t('createYourSockBtn');
     document.body.appendChild(createBtn);
 
-    // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
     giftsContainer = document.createElement('div');
@@ -672,6 +686,8 @@
     const emojiToggle = document.querySelector('.emoji-toggle');
     const emojiPanel = document.getElementById('emojiPanel');
 
+    let closeTimeout = null;
+
     let emojiGrid = '<div class="emoji-grid">';
     EMOJIS.forEach(emoji => {
       emojiGrid += `<div class="emoji-item" data-emoji="${emoji}">${emoji}</div>`;
@@ -681,6 +697,12 @@
 
     function closePanel() {
       emojiPanel.style.display = 'none';
+      if (closeTimeout) clearTimeout(closeTimeout);
+    }
+
+    function openPanel() {
+      emojiPanel.style.display = 'block';
+      if (closeTimeout) clearTimeout(closeTimeout);
     }
 
     emojiToggle.addEventListener('click', (e) => {
@@ -688,24 +710,35 @@
       if (emojiPanel.style.display === 'block') {
         closePanel();
       } else {
-        emojiPanel.style.display = 'block';
-        const rect = messageField.getBoundingClientRect();
-        emojiPanel.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-        emojiPanel.style.left = (rect.left + window.scrollX) + 'px';
-        emojiPanel.style.width = (rect.width - 2) + 'px';
+        openPanel();
       }
     });
 
-    document.addEventListener('click', (e) => {
-      if (!emojiToggle.contains(e.target) && !emojiPanel.contains(e.target)) {
+    const handleMouseEnter = () => {
+      if (closeTimeout) clearTimeout(closeTimeout);
+    };
+
+    const handleMouseLeave = () => {
+      closeTimeout = setTimeout(() => {
         closePanel();
-      }
-    });
+      }, 500);
+    };
+
+    emojiToggle.addEventListener('mouseenter', handleMouseEnter);
+    emojiToggle.addEventListener('mouseleave', handleMouseLeave);
+    emojiPanel.addEventListener('mouseenter', handleMouseEnter);
+    emojiPanel.addEventListener('mouseleave', handleMouseLeave);
 
     emojiPanel.addEventListener('click', (e) => {
       if (e.target.classList.contains('emoji-item')) {
         const emoji = e.target.dataset.emoji;
         insertAtCursor('message', emoji + ' ');
+        closePanel();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!emojiToggle.contains(e.target) && !emojiPanel.contains(e.target)) {
         closePanel();
       }
     });

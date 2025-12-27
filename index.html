@@ -122,7 +122,6 @@
       font-family: inherit;
     }
 
-    /* Подсказка ПОД полем ID */
     .id-hint {
       font-size: 14px;
       color: #aaa;
@@ -170,7 +169,6 @@
       font-family: inherit;
     }
 
-    /* Кнопка эмодзи */
     .emoji-toggle {
       position: absolute;
       right: 12px;
@@ -188,7 +186,6 @@
       z-index: 5;
     }
 
-    /* Панель эмодзи — теперь над полем */
     .emoji-panel {
       position: absolute;
       background: white;
@@ -224,7 +221,6 @@
       background: #f0f0f0;
     }
 
-    /* Скроллбар панели эмодзи */
     .emoji-panel::-webkit-scrollbar {
       width: 6px;
     }
@@ -239,7 +235,7 @@
 
     .gifts-container {
       position: fixed;
-      bottom: 20px;
+      bottom: 140px; /* Подняли выше, чтобы не закрывать снеговиков */
       right: 20px;
       width: 70%;
       max-width: 400px;
@@ -323,9 +319,53 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
+    /* Анимированный фон: снеговики */
+    .snowmen-scene {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .snowman-group {
+      position: absolute;
+      bottom: 0;
+      animation: walk 25s infinite linear;
+    }
+
+    .snowman {
+      display: inline-block;
+      margin: 0 15px;
+    }
+
+    .snowball {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      bottom: 30px;
+      animation: throwSnowball 2s infinite;
+    }
+
+    @keyframes walk {
+      0% { transform: translateX(-100vw); }
+      100% { transform: translateX(100vw); }
+    }
+
+    @keyframes throwSnowball {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      50% { transform: translateY(-40px) rotate(180deg); opacity: 0.8; }
+      100% { transform: translateY(-80px) rotate(360deg); opacity: 0; }
+    }
+
     @media (max-width: 600px) {
-      .gifts-container, .create-your-link {
-        bottom: 10px;
+      .gifts-container {
+        bottom: 120px;
         right: 10px;
         left: 10px;
         width: calc(100% - 20px);
@@ -341,6 +381,8 @@
       .emoji-grid {
         grid-template-columns: repeat(10, 1fr);
       }
+      .snowmen-scene { height: 100px; }
+      .snowman { margin: 0 10px; }
     }
   </style>
 </head>
@@ -422,32 +464,17 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const EMOJIS = [
-  // 🎄 Рождество и зима
-  '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
-  
-  // ❤️ Эмоции и сердца
-  '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
-  
-  // 👨‍👩‍👧 Люди и семья
-  '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
-  
-  // 🌟 Природа и небо
-  '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
-  
-  // 🎁 Подарки, еда, напитки
-  '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
-  
-  // ✨ Магия и веселье
-  '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
-  
-  // 🎶 Музыка и танцы
-  '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
-  
-  // 💫 Дополнительные праздничные
-  '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
-  '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
-];
+  const EMOJIS = [
+    '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
+    '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
+    '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
+    '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
+    '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
+    '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
+    '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
+    '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
+    '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
+  ];
 
   function setLanguage(lang) {
     currentLang = lang;
@@ -490,20 +517,56 @@ const EMOJIS = [
       snowContainer.appendChild(snowflake);
     }
   }
-  createSnowflakes();
 
-  async function generateUniqueSockId() {
-    const { count, error } = await supabaseClient
-      .from('socks')
-      .select('*', { count: 'exact', head: true });
+  // === СНЕГОВИКИ ===
+  function createSnowmenScene() {
+    const scene = document.getElementById('snowmenScene');
+    const groupsCount = 3;
 
-    if (error) return 'sock1';
-    return `sock${(count || 0) + 1}`;
+    for (let i = 0; i < groupsCount; i++) {
+      const group = document.createElement('div');
+      group.className = 'snowman-group';
+      group.style.left = `${-30 - i * 100}%`;
+      group.style.animationDuration = `${20 + i * 8}s`;
+      group.style.animationDelay = `${i * 5}s`;
+
+      for (let j = 0; j < 2; j++) {
+        const snowman = document.createElement('div');
+        snowman.className = 'snowman';
+        snowman.innerHTML = `
+          <svg width="40" height="60" viewBox="0 0 40 60">
+            <circle cx="20" cy="45" r="10" fill="white" />
+            <circle cx="20" cy="30" r="8" fill="white" />
+            <circle cx="20" cy="18" r="6" fill="white" />
+            <circle cx="18" cy="16" r="1" fill="#333" />
+            <circle cx="22" cy="16" r="1" fill="#333" />
+            <polygon points="20,18 20,22 24,20" fill="orange" />
+            <rect x="12" y="26" width="16" height="4" fill="#e74c3c" rx="2" />
+            <rect x="12" y="26" width="4" height="12" fill="#e74c3c" />
+            <rect x="14" y="8" width="12" height="4" fill="#333" />
+            <rect x="10" y="10" width="20" height="2" fill="#333" />
+          </svg>
+        `;
+        group.appendChild(snowman);
+      }
+
+      const snowball = document.createElement('div');
+      snowball.className = 'snowball';
+      snowball.style.left = '25px';
+      snowball.style.animationDelay = `${0.5 + i}s`;
+      group.appendChild(snowball);
+
+      scene.appendChild(group);
+    }
   }
 
-  const path = window.location.pathname;
-  const id = path === '/' ? null : path.substring(1);
+  // Инициализация
   (async () => {
+    createSnowflakes();
+    createSnowmenScene();
+
+    const path = window.location.pathname;
+    const id = path === '/' ? null : path.substring(1);
     if (id && id.length > 0) {
       await showPublicSock(id);
     } else {
@@ -548,6 +611,14 @@ const EMOJIS = [
     `;
   }
 
+  async function generateUniqueSockId() {
+    const { count, error } = await supabaseClient
+      .from('socks')
+      .select('*', { count: 'exact', head: true });
+    if (error) return 'sock1';
+    return `sock${(count || 0) + 1}`;
+  }
+
   async function createSock() {
     const sockId = document.getElementById('sockId').value.trim();
     const ownerName = document.getElementById('ownerName').value.trim();
@@ -577,9 +648,7 @@ const EMOJIS = [
     }
 
     const url = window.location.origin + '/' + sockId;
-
-    const app = document.getElementById('app');
-    app.innerHTML = `
+    document.getElementById('app').innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
         <p>${t('successDesc')}</p>
@@ -593,7 +662,6 @@ const EMOJIS = [
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Скопировано!');
       }).catch(err => {
-        console.error('Ошибка копирования:', err);
         alert('Не удалось скопировать');
       });
     });
@@ -640,9 +708,9 @@ const EMOJIS = [
     }
 
     document.getElementById('app').innerHTML = html;
-
     initEmojiPanel();
 
+    // Кнопка "Создай свой носок"
     let createBtn = document.getElementById('createYourBtn');
     if (createBtn) createBtn.remove();
     createBtn = document.createElement('a');
@@ -652,6 +720,7 @@ const EMOJIS = [
     createBtn.textContent = t('createYourSockBtn');
     document.body.appendChild(createBtn);
 
+    // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
     giftsContainer = document.createElement('div');
@@ -662,7 +731,6 @@ const EMOJIS = [
 
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
-    
     const { count } = await supabaseClient
       .from('gifts')
       .select('*', { count: 'exact', head: true })
@@ -694,9 +762,7 @@ const EMOJIS = [
         cursor: pointer;
         margin: 10px 0;
       `;
-      btn.onclick = () => {
-        submitGift(data.id);
-      };
+      btn.onclick = () => { submitGift(data.id); };
       btnContainer.appendChild(btn);
     }
   }
@@ -705,7 +771,6 @@ const EMOJIS = [
     const messageField = document.getElementById('message');
     const emojiToggle = document.querySelector('.emoji-toggle');
     const emojiPanel = document.getElementById('emojiPanel');
-
     let closeTimeout = null;
 
     let emojiGrid = '<div class="emoji-grid">';
@@ -719,7 +784,6 @@ const EMOJIS = [
       emojiPanel.style.display = 'none';
       if (closeTimeout) clearTimeout(closeTimeout);
     }
-
     function openPanel() {
       emojiPanel.style.display = 'block';
       if (closeTimeout) clearTimeout(closeTimeout);
@@ -727,21 +791,13 @@ const EMOJIS = [
 
     emojiToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (emojiPanel.style.display === 'block') {
-        closePanel();
-      } else {
-        openPanel();
-      }
+      if (emojiPanel.style.display === 'block') closePanel();
+      else openPanel();
     });
 
-    const handleMouseEnter = () => {
-      if (closeTimeout) clearTimeout(closeTimeout);
-    };
-
+    const handleMouseEnter = () => { if (closeTimeout) clearTimeout(closeTimeout); };
     const handleMouseLeave = () => {
-      closeTimeout = setTimeout(() => {
-        closePanel();
-      }, 500);
+      closeTimeout = setTimeout(() => closePanel(), 500);
     };
 
     emojiToggle.addEventListener('mouseenter', handleMouseEnter);
@@ -839,6 +895,9 @@ const EMOJIS = [
     if (gifts) gifts.remove();
   });
 </script>
+
+<!-- Анимированный фон: снеговики -->
+<div class="snowmen-scene" id="snowmenScene"></div>
+
 </body>
 </html>
-

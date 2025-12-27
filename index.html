@@ -161,6 +161,30 @@
       font-family: inherit;
     }
 
+    /* Эмодзи и GIF панель */
+    .emoji-gif-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .emoji-btn, .gif-btn {
+      padding: 6px 10px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .emoji-btn:hover {
+      background: #f8f9fa;
+    }
+    .gif-btn {
+      background: #e8f4fc;
+      color: #2980b9;
+    }
+
     .gifts-container {
       position: fixed;
       bottom: 20px;
@@ -262,6 +286,9 @@
         top: 10px;
         right: 10px;
       }
+      .emoji-gif-bar {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -281,7 +308,7 @@
       title: 'Рождественский носок',
       titleCreate: '🎄 Создай свой носок',
       descCreate: 'Друзья смогут оставить Вам поздравления и подарочки',
-      placeholderId: 'Уникальное имя (латиницей): например, ivan2025',
+      placeholderId: 'Назови свой уникальный носок латинскими или оставь предложенный',
       placeholderName: 'Твоё имя (для приветствия)',
       placeholderPayment: 'Ссылка для перевода (PayPal, Revolut и т.д.)',
       createBtn: 'Создать носок',
@@ -304,13 +331,15 @@
       alertIdFormat: 'ID может содержать только буквы, цифры, _ и -',
       alertError: 'Ошибка! Такой носок уже есть?',
       alertSent: '🎁 Подарок отправлен!',
-      alertSendError: 'Ошибка отправки'
+      alertSendError: 'Ошибка отправки',
+      emojiLabel: '😊 Эмодзи',
+      gifLabel: '🎬 GIF'
     },
     en: {
       title: 'Christmas Sock',
       titleCreate: '🎄 Create your sock',
       descCreate: 'Friends can leave you greetings and little gifts',
-      placeholderId: 'Unique name (Latin): e.g., ivan2025',
+      placeholderId: 'Name your unique sock in Latin or keep the suggested one',
       placeholderName: 'Your name (for greeting)',
       placeholderPayment: 'Payment link (PayPal, Revolut, etc.)',
       createBtn: 'Create Sock',
@@ -333,7 +362,9 @@
       alertIdFormat: 'ID can only contain letters, digits, _ and -',
       alertError: 'Error! Sock already exists?',
       alertSent: '🎁 Gift sent!',
-      alertSendError: 'Send error'
+      alertSendError: 'Send error',
+      emojiLabel: '😊 Emoji',
+      gifLabel: '🎬 GIF'
     }
   };
 
@@ -343,6 +374,16 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Праздничные эмодзи
+  const EMOJIS = ['🎅', '🎄', '🎁', '✨', '🦌', '❄️', '🎇', '⛄', '🕯️', '🔔'];
+  // Праздничные GIF (Giphy)
+  const GIFS = [
+    'https://media.giphy.com/media/3o7TKsQ8UQ4l4LhG2c/giphy.gif', // Дед Мороз
+    'https://media.giphy.com/media/l0MYt5jPR6QpBGpJK/giphy.gif', // Ёлка
+    'https://media.giphy.com/media/26FPqAHu6aABUfS2I/giphy.gif', // Подарки
+    'https://media.giphy.com/media/3o7TKUAOqDm3SQNTsE/giphy.gif'  // Снег
+  ];
+
   function setLanguage(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -350,7 +391,6 @@
     });
     document.getElementById('page-title').textContent = translations[lang].title;
     
-    // Полная перерисовка
     const path = window.location.pathname;
     const id = path === '/' ? null : path.substring(1);
     if (id && id.length > 0) {
@@ -472,7 +512,6 @@
 
     const url = window.location.origin + '/' + sockId;
 
-    // ✅ Безопасное создание кнопки
     const app = document.getElementById('app');
     app.innerHTML = `
       <div class="success">
@@ -484,7 +523,6 @@
       </div>
     `;
     
-    // ✅ Рабочая кнопка копирования
     document.getElementById('copyBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Скопировано!');
@@ -511,7 +549,6 @@
           <p><a href="/" style="color:white;text-decoration:underline;">${t('createYour')}</a></p>
         </div>
       `;
-      // Убираем кнопку, если ушла страница
       const btn = document.getElementById('createYourBtn');
       if (btn) btn.remove();
       return;
@@ -524,7 +561,10 @@
       </div>
       <h3 style="margin:20px 0;color:white;">${t('leaveGift')}</h3>
       <div class="form-group"><input id="senderName" placeholder="${t('yourName')}" /></div>
-      <div class="form-group"><textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea></div>
+      <div class="form-group">
+        <textarea id="message" placeholder="${t('messagePlaceholder')}"></textarea>
+        <div class="emoji-gif-bar" id="emojiGifBar"></div>
+      </div>
       <div id="submitBtnContainer"></div>
     `;
 
@@ -534,10 +574,33 @@
 
     document.getElementById('app').innerHTML = html;
 
+    // Добавляем панель эмодзи/GIF
+    const bar = document.getElementById('emojiGifBar');
+    bar.innerHTML = '';
+    
+    // Эмодзи
+    EMOJIS.forEach(emoji => {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-btn';
+      btn.textContent = emoji;
+      btn.title = 'Вставить эмодзи';
+      btn.onclick = () => insertAtCursor('message', emoji + ' ');
+      bar.appendChild(btn);
+    });
+
+    // GIF
+    GIFS.forEach((gif, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'gif-btn';
+      btn.textContent = `${t('gifLabel')} ${i+1}`;
+      btn.title = 'Вставить праздничный GIF';
+      btn.onclick = () => insertAtCursor('message', '\n' + gif + '\n');
+      bar.appendChild(btn);
+    });
+
     // Кнопка "Создай свой носок"
     let createBtn = document.getElementById('createYourBtn');
     if (createBtn) createBtn.remove();
-    
     createBtn = document.createElement('a');
     createBtn.id = 'createYourBtn';
     createBtn.href = '/';
@@ -548,7 +611,6 @@
     // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
-    
     giftsContainer = document.createElement('div');
     giftsContainer.id = 'giftsCorner';
     giftsContainer.className = 'gifts-container';
@@ -594,6 +656,18 @@
       };
       btnContainer.appendChild(btn);
     }
+  }
+
+  // Вставка текста в текстовое поле в позицию курсора
+  function insertAtCursor(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    const startPos = field.selectionStart;
+    const endPos = field.selectionEnd;
+    const oldValue = field.value;
+    field.value = oldValue.substring(0, startPos) + value + oldValue.substring(endPos);
+    field.focus();
+    const newPos = startPos + value.length;
+    field.setSelectionRange(newPos, newPos);
   }
 
   async function loadGifts(sockId, container) {

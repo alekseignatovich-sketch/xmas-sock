@@ -237,23 +237,24 @@
       border-radius: 3px;
     }
 
-    .gifts-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 70%;
-      max-width: 400px;
-      height: 220px;
-      background: rgba(255, 255, 255, 0.94);
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      z-index: 10;
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(231, 76, 60, 0.2);
-      display: flex;
-      flex-direction: column;
-    }
+.gifts-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 70%;
+  max-width: 400px;
+  height: 110px; /* было 220px → уменьшено в 2 раза */
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 12px;
+  padding: 10px; /* уменьшено */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  z-index: 10;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9em; /* чуть мельче текст */
+}
 
     .gifts-title {
       font-weight: bold;
@@ -640,8 +641,47 @@ const EMOJIS = [
 
     initEmojiPanel();
 
-    let createBtn = document.getElementById('createYourBtn');
-    if (createBtn) createBtn.remove();
+const container = document.createElement('div');
+container.id = 'createYourBtn';
+container.style.cssText = `
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+`;
+
+// Подарочная коробка (SVG)
+const box = document.createElement('div');
+box.innerHTML = `
+  <svg width="50" height="40" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <!-- Коробка -->
+    <rect x="10" y="20" width="80" height="50" rx="5" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+    <!-- Крышка -->
+    <rect x="5" y="10" width="90" height="15" rx="3" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+    <!-- Лента вертикальная -->
+    <rect x="47" y="5" width="6" height="70" fill="#f1c40f"/>
+    <!-- Лента горизонтальная -->
+    <rect x="20" y="42" width="60" height="6" fill="#f1c40f"/>
+    <!-- Бант -->
+    <circle cx="50" cy="45" r="5" fill="#f1c40f"/>
+  </svg>
+`;
+box.style.marginBottom = '8px';
+
+// Кнопка
+const btn = document.createElement('a');
+btn.href = '/';
+btn.className = 'create-your-link';
+btn.textContent = t('createYourSockBtn');
+btn.style.width = '100%';
+btn.style.textAlign = 'center';
+
+container.appendChild(box);
+container.appendChild(btn);
+document.body.appendChild(container);
     createBtn = document.createElement('a');
     createBtn.id = 'createYourBtn';
     createBtn.href = '/';
@@ -838,5 +878,6 @@ const EMOJIS = [
 </script>
 </body>
 </html>
+
 
 

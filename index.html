@@ -355,6 +355,7 @@
   </div>
 
 <script>
+  // === ВСЁ ОСТАЛЬНОЕ БЕЗ ИЗМЕНЕНИЙ ===
   const translations = {
     ru: {
       title: 'Рождественский носок',
@@ -422,32 +423,17 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const EMOJIS = [
-  // 🎄 Рождество и зима
-  '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
-  
-  // ❤️ Эмоции и сердца
-  '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
-  
-  // 👨‍👩‍👧 Люди и семья
-  '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
-  
-  // 🌟 Природа и небо
-  '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
-  
-  // 🎁 Подарки, еда, напитки
-  '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
-  
-  // ✨ Магия и веселье
-  '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
-  
-  // 🎶 Музыка и танцы
-  '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
-  
-  // 💫 Дополнительные праздничные
-  '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
-  '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
-];
+  const EMOJIS = [
+    '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
+    '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
+    '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
+    '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
+    '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
+    '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
+    '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
+    '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
+    '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
+  ];
 
   function setLanguage(lang) {
     currentLang = lang;
@@ -490,26 +476,48 @@ const EMOJIS = [
       snowContainer.appendChild(snowflake);
     }
   }
-  createSnowflakes();
 
-  async function generateUniqueSockId() {
-    const { count, error } = await supabaseClient
-      .from('socks')
-      .select('*', { count: 'exact', head: true });
+  function createSnowmenScene() {
+    const scene = document.getElementById('snowmenScene');
+    if (!scene) return; // Защита от ошибки
 
-    if (error) return 'sock1';
-    return `sock${(count || 0) + 1}`;
-  }
+    const groupsCount = 3;
+    for (let i = 0; i < groupsCount; i++) {
+      const group = document.createElement('div');
+      group.className = 'snowman-group';
+      group.style.left = `${-30 - i * 100}%`;
+      group.style.animationDuration = `${20 + i * 8}s`;
+      group.style.animationDelay = `${i * 5}s`;
 
-  const path = window.location.pathname;
-  const id = path === '/' ? null : path.substring(1);
-  (async () => {
-    if (id && id.length > 0) {
-      await showPublicSock(id);
-    } else {
-      showCreateForm();
+      for (let j = 0; j < 2; j++) {
+        const snowman = document.createElement('div');
+        snowman.className = 'snowman';
+        snowman.innerHTML = `
+          <svg width="40" height="60" viewBox="0 0 40 60">
+            <circle cx="20" cy="45" r="10" fill="white" />
+            <circle cx="20" cy="30" r="8" fill="white" />
+            <circle cx="20" cy="18" r="6" fill="white" />
+            <circle cx="18" cy="16" r="1" fill="#333" />
+            <circle cx="22" cy="16" r="1" fill="#333" />
+            <polygon points="20,18 20,22 24,20" fill="orange" />
+            <rect x="12" y="26" width="16" height="4" fill="#e74c3c" rx="2" />
+            <rect x="12" y="26" width="4" height="12" fill="#e74c3c" />
+            <rect x="14" y="8" width="12" height="4" fill="#333" />
+            <rect x="10" y="10" width="20" height="2" fill="#333" />
+          </svg>
+        `;
+        group.appendChild(snowman);
+      }
+
+      const snowball = document.createElement('div');
+      snowball.className = 'snowball';
+      snowball.style.left = '25px';
+      snowball.style.animationDelay = `${0.5 + i}s`;
+      group.appendChild(snowball);
+
+      scene.appendChild(group);
     }
-  })();
+  }
 
   function escapeHtml(text) {
     if (typeof text !== 'string') return '';
@@ -523,6 +531,14 @@ const EMOJIS = [
 
   function t(key) {
     return translations[currentLang][key] || key;
+  }
+
+  async function generateUniqueSockId() {
+    const { count, error } = await supabaseClient
+      .from('socks')
+      .select('*', { count: 'exact', head: true });
+    if (error) return 'sock1';
+    return `sock${(count || 0) + 1}`;
   }
 
   async function showCreateForm() {
@@ -577,9 +593,7 @@ const EMOJIS = [
     }
 
     const url = window.location.origin + '/' + sockId;
-
-    const app = document.getElementById('app');
-    app.innerHTML = `
+    document.getElementById('app').innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
         <p>${t('successDesc')}</p>
@@ -593,7 +607,6 @@ const EMOJIS = [
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Скопировано!');
       }).catch(err => {
-        console.error('Ошибка копирования:', err);
         alert('Не удалось скопировать');
       });
     });
@@ -640,7 +653,6 @@ const EMOJIS = [
     }
 
     document.getElementById('app').innerHTML = html;
-
     initEmojiPanel();
 
     let createBtn = document.getElementById('createYourBtn');
@@ -662,7 +674,6 @@ const EMOJIS = [
 
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
-    
     const { count } = await supabaseClient
       .from('gifts')
       .select('*', { count: 'exact', head: true })
@@ -694,9 +705,7 @@ const EMOJIS = [
         cursor: pointer;
         margin: 10px 0;
       `;
-      btn.onclick = () => {
-        submitGift(data.id);
-      };
+      btn.onclick = () => { submitGift(data.id); };
       btnContainer.appendChild(btn);
     }
   }
@@ -705,7 +714,6 @@ const EMOJIS = [
     const messageField = document.getElementById('message');
     const emojiToggle = document.querySelector('.emoji-toggle');
     const emojiPanel = document.getElementById('emojiPanel');
-
     let closeTimeout = null;
 
     let emojiGrid = '<div class="emoji-grid">';
@@ -719,7 +727,6 @@ const EMOJIS = [
       emojiPanel.style.display = 'none';
       if (closeTimeout) clearTimeout(closeTimeout);
     }
-
     function openPanel() {
       emojiPanel.style.display = 'block';
       if (closeTimeout) clearTimeout(closeTimeout);
@@ -727,21 +734,13 @@ const EMOJIS = [
 
     emojiToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (emojiPanel.style.display === 'block') {
-        closePanel();
-      } else {
-        openPanel();
-      }
+      if (emojiPanel.style.display === 'block') closePanel();
+      else openPanel();
     });
 
-    const handleMouseEnter = () => {
-      if (closeTimeout) clearTimeout(closeTimeout);
-    };
-
+    const handleMouseEnter = () => { if (closeTimeout) clearTimeout(closeTimeout); };
     const handleMouseLeave = () => {
-      closeTimeout = setTimeout(() => {
-        closePanel();
-      }, 500);
+      closeTimeout = setTimeout(() => closePanel(), 500);
     };
 
     emojiToggle.addEventListener('mouseenter', handleMouseEnter);
@@ -838,7 +837,22 @@ const EMOJIS = [
     const gifts = document.getElementById('giftsCorner');
     if (gifts) gifts.remove();
   });
+
+  // === ГЛАВНОЕ: ЗАПУСК ПОСЛЕ ЗАГРУЗКИ DOM ===
+  document.addEventListener('DOMContentLoaded', async () => {
+    createSnowflakes();
+    createSnowmenScene();
+
+    const path = window.location.pathname;
+    const id = path === '/' ? null : path.substring(1);
+    if (id && id.length > 0) {
+      await showPublicSock(id);
+    } else {
+      showCreateForm();
+    }
+  });
 </script>
 </body>
 </html>
+
 

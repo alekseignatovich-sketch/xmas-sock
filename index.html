@@ -589,15 +589,16 @@
     // Контейнер: изображение + кнопка
     const container = document.createElement('div');
     container.id = 'createYourBtn';
-    container.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 10;
-    `;
+container.style.cssText = `
+  position: fixed;
+  bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  max-width: calc(100% - 40px);
+`;
 
     // Изображение (можно заменить URL)
     const img = document.createElement('img');
@@ -607,6 +608,8 @@
     img.style.height = 'auto';
     img.style.marginBottom = '8px';
     img.style.borderRadius = '8px';
+    img.style.maxWidth = '100%';
+    
 
     const btn = document.createElement('a');
     btn.href = '/';
@@ -801,6 +804,7 @@
 
 </body>
 </html>
+
 
 
 

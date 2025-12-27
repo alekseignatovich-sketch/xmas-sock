@@ -601,13 +601,12 @@
 
     // Изображение (можно заменить URL)
     const img = document.createElement('img');
-    img.src = './present.gif';
+    img.src = './present.gif?' + Math.random();
     img.alt = 'Подарок';
     img.style.width = '60px';
-    img.style.height = '60px';
+    img.style.height = 'auto';
     img.style.marginBottom = '8px';
     img.style.borderRadius = '8px';
-    img.style.objectFit = 'cover';
 
     const btn = document.createElement('a');
     btn.href = '/';
@@ -802,6 +801,7 @@
 
 </body>
 </html>
+
 
 
 

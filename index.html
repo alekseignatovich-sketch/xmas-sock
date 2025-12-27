@@ -122,6 +122,7 @@
       font-family: inherit;
     }
 
+    /* Подсказка ПОД полем ID */
     .id-hint {
       font-size: 14px;
       color: #aaa;
@@ -155,6 +156,21 @@
       text-align: center;
     }
 
+    .payment-btn {
+      background: #f39c12;
+      padding: 14px;
+      font-size: 18px;
+      text-align: center;
+      margin: 20px 0;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-block;
+      width: 100%;
+      font-weight: bold;
+      font-family: inherit;
+    }
+
+    /* Кнопка эмодзи */
     .emoji-toggle {
       position: absolute;
       right: 12px;
@@ -172,162 +188,158 @@
       z-index: 5;
     }
 
-    /* Блок подарков — в виде носка */
+    /* Панель эмодзи — теперь над полем */
+    .emoji-panel {
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      max-height: 180px;
+      overflow-y: auto;
+      width: calc(100% - 2px);
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 5px;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 4px;
+    }
+
+    .emoji-item {
+      text-align: center;
+      padding: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 16px;
+    }
+    .emoji-item:hover {
+      background: #f0f0f0;
+    }
+
+    /* Скроллбар панели эмодзи */
+    .emoji-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .emoji-panel::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .emoji-panel::-webkit-scrollbar-thumb {
+      background: #c0392b;
+      border-radius: 3px;
+    }
+
     .gifts-container {
       position: fixed;
-      bottom: 100px;
+      bottom: 20px;
       right: 20px;
-      width: 60%; /* было 70% */
-      max-width: 350px; /* уменьшено */
-      height: 180px; /* уменьшено на ~30% */
-      background: rgba(231, 76, 60, 0.92);
-      border-radius: 0 0 30px 30px;
-      clip-path: path('M0,0 L100,0 L90,30 Q50,60 10,30 Z');
-      padding: 12px;
+      width: 70%;
+      max-width: 400px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 12px;
+      padding: 15px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       z-index: 10;
       backdrop-filter: blur(5px);
+      border: 1px solid rgba(231, 76, 60, 0.2);
       display: flex;
       flex-direction: column;
     }
 
     .gifts-title {
       font-weight: bold;
-      color: white;
-      margin-bottom: 8px;
+      color: var(--main);
+      margin-bottom: 10px;
       font-size: 1.1em;
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
     }
 
     .gifts-list {
       flex: 1;
       overflow-y: auto;
       padding-right: 5px;
-      color: white;
     }
 
     .gift-item {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.3);
-    }
-
-    .gift-item:last-child {
-      border-bottom: none;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
     }
 
     .gift-from {
       font-weight: bold;
-      color: #fdf6f0;
-      font-size: 1em;
+      color: #2c3e50;
+      font-size: 1.05em;
     }
 
     .gift-message {
-      margin-top: 4px;
-      font-size: 0.95em;
-      color: #fdf6f0;
+      margin-top: 6px;
+      font-size: 1em;
+      color: #444;
       line-height: 1.4;
     }
 
     .no-gifts {
-      color: rgba(255,255,255,0.6);
+      color: #888;
       font-style: italic;
       text-align: center;
-      font-size: 0.9em;
-      padding-top: 20px;
+      font-size: 0.95em;
+      padding-top: 30px;
     }
 
     .gifts-list::-webkit-scrollbar {
       width: 6px;
     }
     .gifts-list::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.2);
+      background: #f1f1f1;
       border-radius: 3px;
     }
     .gifts-list::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.5);
+      background: #c0392b;
       border-radius: 3px;
     }
 
-    /* Кнопка "Создай свой носок" — подарочная коробка */
     .create-your-link {
       position: fixed;
       bottom: 20px;
       left: 20px;
-      width: 60px;
-      height: 60px;
       background: #3498db;
-      border-radius: 8px;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
       text-decoration: none;
       font-weight: bold;
-      font-size: 0;
+      font-size: 14px;
       z-index: 10;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-
-    .create-your-link::before {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 6px;
-      background: white;
-      border-radius: 3px;
-    }
-
-    .create-your-link::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 40px;
-      background: white;
-      border-radius: 3px;
-    }
-
-    .create-your-link span {
-      position: absolute;
-      bottom: -20px;
-      font-size: 12px;
-      white-space: nowrap;
-      color: white;
-    }
-
-    /* Сугробы */
-    .snowbank {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 80px;
-      background: white;
-      clip-path: path('M0,30 Q100,10 200,30 Q300,50 400,30 Q500,10 600,30 Q700,50 800,30 Q900,10 1000,30 Q1100,50 1200,30 Q1300,10 1400,30 L1400,80 L0,80 Z');
-      z-index: 5;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 600px) {
-      .gifts-container {
-        bottom: 90px;
+      .gifts-container, .create-your-link {
+        bottom: 10px;
         right: 10px;
         left: 10px;
         width: calc(100% - 20px);
-        max-width: none;
       }
       .create-your-link {
-        left: 10px;
-        width: 50px;
-        height: 50px;
+        width: auto;
+        text-align: center;
       }
-      .create-your-link span {
-        font-size: 10px;
+      .lang-switcher {
+        top: 10px;
+        right: 10px;
+      }
+      .emoji-grid {
+        grid-template-columns: repeat(10, 1fr);
       }
     }
   </style>
@@ -342,9 +354,6 @@
     <h2>Loading...</h2>
   </div>
 
-  <!-- Сугробы -->
-  <div class="snowbank"></div>
-
 <script>
   const translations = {
     ru: {
@@ -353,6 +362,7 @@
       descCreate: 'Друзья смогут оставить Вам поздравления и подарочки',
       placeholderId: 'Назови свой уникальный носок латинскими или оставь предложенный',
       placeholderName: 'Твоё имя (для приветствия)',
+      placeholderPayment: 'Ссылка для перевода (PayPal, Revolut и т.д.)',
       createBtn: 'Создать носок',
       successTitle: '✅ Готово!',
       successDesc: 'Твой носок создан:',
@@ -365,7 +375,8 @@
       yourName: 'Твоё имя',
       messagePlaceholder: 'Поздравление с Новым годом и Рождеством... (эмодзи разрешены!)',
       sendBtn: 'Отправить подарок',
-      createYourSockBtn: 'Создай носок',
+      paymentBtn: '🎁 Отправить денежный подарок',
+      createYourSockBtn: 'Создай свой носок и получай поздравления!',
       giftsTitle: '🎁 Подарков:',
       noGifts: 'Пока нет подарков',
       alertFill: 'Заполни обязательные поля!',
@@ -380,6 +391,7 @@
       descCreate: 'Friends can leave you greetings and little gifts',
       placeholderId: 'Name your unique sock in Latin or keep the suggested one',
       placeholderName: 'Your name (for greeting)',
+      placeholderPayment: 'Payment link (PayPal, Revolut, etc.)',
       createBtn: 'Create Sock',
       successTitle: '✅ Done!',
       successDesc: 'Your sock is ready:',
@@ -392,7 +404,8 @@
       yourName: 'Your name',
       messagePlaceholder: 'New Year & Christmas greeting... (emojis allowed!)',
       sendBtn: 'Send gift',
-      createYourSockBtn: 'Create sock',
+      paymentBtn: '🎁 Send monetary gift',
+      createYourSockBtn: 'Create your sock and receive greetings!',
       giftsTitle: '🎁 Gifts:',
       noGifts: 'No gifts yet',
       alertFill: 'Please fill required fields!',
@@ -409,17 +422,32 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwdW9pZ2x2anBpdXdxZnF2a2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxMDksImV4cCI6MjA4MTYyMjEwOX0.4kR823mI2hO4k9-RxzNsPjPJp9Y-ti60dlTt_Ey-E4g';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const EMOJIS = [
-    '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
-    '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
-    '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
-    '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
-    '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
-    '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
-    '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
-    '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
-    '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
-  ];
+const EMOJIS = [
+  // 🎄 Рождество и зима
+  '🎅', '🤶', '🎄', '🎁', '🧦', '❄️', '⛄', '🦌', '🕯️', '🔔', '🌟', '✨', '🎆', '🎇', '🪅',
+  
+  // ❤️ Эмоции и сердца
+  '😊', '🥰', '😍', '🤗', '🤩', '🎉', '🎊', '💖', '❤️', '💙', '💚', '💛', '💜', '🧡', '🖤',
+  
+  // 👨‍👩‍👧 Люди и семья
+  '👨‍👩‍👧', '👨‍👩‍👦', '👩‍👧', '👨‍👧', '👵', '👴', '👶', '👧', '👦', '👩', '👨', '🧓', '🧑', '🧑‍🎄',
+  
+  // 🌟 Природа и небо
+  '🌞', '🌙', '⛅', '🌤️', '🌈', '☃️', '🔥', '💫', '🪐', '🌌', '🌠',
+  
+  // 🎁 Подарки, еда, напитки
+  '🍪', '🥛', '🍷', '🥂', '🍾', '🍬', '🍫', '🍩', '🍰', '🧁', '🥧', '🍮', '🍺', '🍹', '☕',
+  
+  // ✨ Магия и веселье
+  '🎭', '🎨', '🎪', '🎬', '🎧', '🎤', '🎧', '🎼', '🎹', '🎻', '🥁', '🪘', '🪇', '🎮', '🎯',
+  
+  // 🎶 Музыка и танцы
+  '💃', '🕺', '🩰', '🎭', '🎪', '🎫', '🎬', '🎧', '🎶', '🎵', '🎼', '🎤', '🎧',
+  
+  // 💫 Дополнительные праздничные
+  '💫', '⭐', '🌟', '✨', '🎇', '🎆', '🎊', '🎉', '💝', '🎀', '🎁', '🎄', '❄️', '🌨️', '☃️',
+  '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
+];
 
   function setLanguage(lang) {
     currentLang = lang;
@@ -445,23 +473,43 @@
 
   function createSnowflakes() {
     const snowContainer = document.getElementById('snowflakes');
-    const snowflakeCount = 360; // ← Было 60, стало 360+
+    const snowflakeCount = 60;
     for (let i = 0; i < snowflakeCount; i++) {
       const snowflake = document.createElement('div');
       snowflake.classList.add('snowflake');
-      const size = Math.random() * 4 + 1;
+      const size = Math.random() * 6 + 2;
       snowflake.style.width = `${size}px`;
       snowflake.style.height = `${size}px`;
       snowflake.style.left = `${Math.random() * 100}vw`;
-      const duration = Math.random() * 3 + 2; // быстрее
+      const duration = Math.random() * 12 + 8;
       const delay = Math.random() * 5;
-      const drift = (Math.random() - 0.5) * 150;
+      const drift = (Math.random() - 0.5) * 100;
       snowflake.style.setProperty('--drift', `${drift}px`);
       snowflake.style.animationDuration = `${duration}s`;
       snowflake.style.animationDelay = `${delay}s`;
       snowContainer.appendChild(snowflake);
     }
   }
+  createSnowflakes();
+
+  async function generateUniqueSockId() {
+    const { count, error } = await supabaseClient
+      .from('socks')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) return 'sock1';
+    return `sock${(count || 0) + 1}`;
+  }
+
+  const path = window.location.pathname;
+  const id = path === '/' ? null : path.substring(1);
+  (async () => {
+    if (id && id.length > 0) {
+      await showPublicSock(id);
+    } else {
+      showCreateForm();
+    }
+  })();
 
   function escapeHtml(text) {
     if (typeof text !== 'string') return '';
@@ -475,14 +523,6 @@
 
   function t(key) {
     return translations[currentLang][key] || key;
-  }
-
-  async function generateUniqueSockId() {
-    const { count, error } = await supabaseClient
-      .from('socks')
-      .select('*', { count: 'exact', head: true });
-    if (error) return 'sock1';
-    return `sock${(count || 0) + 1}`;
   }
 
   async function showCreateForm() {
@@ -501,7 +541,9 @@
       <div class="form-group">
         <input id="ownerName" placeholder="${t('placeholderName')}" />
       </div>
-      <!-- Поле "Ссылка для перевода" УДАЛЕНО -->
+      <div class="form-group">
+        <input id="paymentLink" placeholder="${t('placeholderPayment')}" />
+      </div>
       <button class="create-sock-btn" onclick="createSock()">${t('createBtn')}</button>
     `;
   }
@@ -509,6 +551,7 @@
   async function createSock() {
     const sockId = document.getElementById('sockId').value.trim();
     const ownerName = document.getElementById('ownerName').value.trim();
+    const paymentLink = document.getElementById('paymentLink').value.trim();
     
     if (!sockId || !ownerName) { 
       alert(t('alertFill')); 
@@ -525,7 +568,7 @@
         id: sockId,
         owner_name: ownerName,
         allow_text: true,
-        payment_link: null // убрано
+        payment_link: paymentLink || null
       }]);
 
     if (error) { 
@@ -534,7 +577,9 @@
     }
 
     const url = window.location.origin + '/' + sockId;
-    document.getElementById('app').innerHTML = `
+
+    const app = document.getElementById('app');
+    app.innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
         <p>${t('successDesc')}</p>
@@ -548,6 +593,7 @@
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Скопировано!');
       }).catch(err => {
+        console.error('Ошибка копирования:', err);
         alert('Не удалось скопировать');
       });
     });
@@ -569,6 +615,8 @@
           <p><a href="/" style="color:white;text-decoration:underline;">${t('createYour')}</a></p>
         </div>
       `;
+      const btn = document.getElementById('createYourBtn');
+      if (btn) btn.remove();
       return;
     }
 
@@ -587,35 +635,47 @@
       <div id="submitBtnContainer"></div>
     `;
 
-    // Платёжная кнопка УДАЛЕНА
+    if (data.payment_link) {
+      html += `<a href="${escapeHtml(data.payment_link)}" target="_blank" class="payment-btn">${t('paymentBtn')}</a>`;
+    }
 
     document.getElementById('app').innerHTML = html;
+
     initEmojiPanel();
 
-    // Кнопка "Создай свой носок" — подарочная коробка
     let createBtn = document.getElementById('createYourBtn');
     if (createBtn) createBtn.remove();
     createBtn = document.createElement('a');
     createBtn.id = 'createYourBtn';
     createBtn.href = '/';
     createBtn.className = 'create-your-link';
-    createBtn.innerHTML = '<span>' + t('createYourSockBtn') + '</span>';
+    createBtn.textContent = t('createYourSockBtn');
     document.body.appendChild(createBtn);
 
-    // Блок подарков — в виде носка
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
     giftsContainer = document.createElement('div');
     giftsContainer.id = 'giftsCorner';
     giftsContainer.className = 'gifts-container';
-    giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')}</div><div class="gifts-list"></div>`;
+    giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
     document.body.appendChild(giftsContainer);
 
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
+    
+    const { count } = await supabaseClient
+      .from('gifts')
+      .select('*', { count: 'exact', head: true })
+      .eq('sock_id', id);
+    document.getElementById('giftsCount').textContent = count || 0;
 
     autoRefreshInterval = setInterval(async () => {
       loadGifts(id, listEl);
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', id);
+      document.getElementById('giftsCount').textContent = count || 0;
     }, 20000);
 
     const btnContainer = document.getElementById('submitBtnContainer');
@@ -634,7 +694,9 @@
         cursor: pointer;
         margin: 10px 0;
       `;
-      btn.onclick = () => { submitGift(data.id); };
+      btn.onclick = () => {
+        submitGift(data.id);
+      };
       btnContainer.appendChild(btn);
     }
   }
@@ -643,6 +705,7 @@
     const messageField = document.getElementById('message');
     const emojiToggle = document.querySelector('.emoji-toggle');
     const emojiPanel = document.getElementById('emojiPanel');
+
     let closeTimeout = null;
 
     let emojiGrid = '<div class="emoji-grid">';
@@ -656,6 +719,7 @@
       emojiPanel.style.display = 'none';
       if (closeTimeout) clearTimeout(closeTimeout);
     }
+
     function openPanel() {
       emojiPanel.style.display = 'block';
       if (closeTimeout) clearTimeout(closeTimeout);
@@ -663,13 +727,21 @@
 
     emojiToggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (emojiPanel.style.display === 'block') closePanel();
-      else openPanel();
+      if (emojiPanel.style.display === 'block') {
+        closePanel();
+      } else {
+        openPanel();
+      }
     });
 
-    const handleMouseEnter = () => { if (closeTimeout) clearTimeout(closeTimeout); };
+    const handleMouseEnter = () => {
+      if (closeTimeout) clearTimeout(closeTimeout);
+    };
+
     const handleMouseLeave = () => {
-      closeTimeout = setTimeout(() => closePanel(), 500);
+      closeTimeout = setTimeout(() => {
+        closePanel();
+      }, 500);
     };
 
     emojiToggle.addEventListener('mouseenter', handleMouseEnter);
@@ -749,7 +821,14 @@
     if (document.getElementById('message')) document.getElementById('message').value = '';
 
     const listEl = document.querySelector('#giftsCorner .gifts-list');
-    if (listEl) loadGifts(sockId, listEl);
+    if (listEl) {
+      loadGifts(sockId, listEl);
+      const { count } = await supabaseClient
+        .from('gifts')
+        .select('*', { count: 'exact', head: true })
+        .eq('sock_id', sockId);
+      document.getElementById('giftsCount').textContent = count || 0;
+    }
   }
 
   window.addEventListener('beforeunload', () => {
@@ -759,19 +838,7 @@
     const gifts = document.getElementById('giftsCorner');
     if (gifts) gifts.remove();
   });
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    createSnowflakes();
-
-    const path = window.location.pathname;
-    const id = path === '/' ? null : path.substring(1);
-    if (id && id.length > 0) {
-      await showPublicSock(id);
-    } else {
-      showCreateForm();
-    }
-  });
 </script>
-
 </body>
 </html>
+

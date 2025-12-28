@@ -525,7 +525,8 @@
       return; 
     }
 
-    document.getElementById('app').innerHTML = `
+    const url = window.location.origin + '/' + sockId;
+document.getElementById('app').innerHTML = `
   <div class="success">
     <h2>${t('successTitle')}</h2>
     <p>${t('successDesc')}</p>
@@ -605,15 +606,6 @@ document.getElementById('saveBannerBtn').addEventListener('click', async () => {
     link.click();
   }, 'image/png');
 });
-    
-    document.getElementById('copyBtn').addEventListener('click', () => {
-      navigator.clipboard.writeText(url).then(() => {
-        alert('✅ Скопировано!');
-      }).catch(err => {
-        alert('Не удалось скопировать');
-      });
-    });
-  }
 
   async function showPublicSock(id) {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
@@ -846,4 +838,3 @@ document.getElementById('saveBannerBtn').addEventListener('click', async () => {
 
 </body>
 </html>
-

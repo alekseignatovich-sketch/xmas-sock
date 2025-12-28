@@ -525,16 +525,86 @@
       return; 
     }
 
-    const url = window.location.origin + '/' + sockId;
     document.getElementById('app').innerHTML = `
-      <div class="success">
-        <h2>${t('successTitle')}</h2>
-        <p>${t('successDesc')}</p>
-        <div id="sockUrl" style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
-        <button id="copyBtn">${t('copyBtn')}</button>
-        <p style="margin-top:15px;font-size:14px;color:#666;">${t('share')}</p>
+  <div class="success">
+    <h2>${t('successTitle')}</h2>
+    <p>${t('successDesc')}</p>
+    <div id="sockUrl" style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
+    <button id="copyBtn">${t('copyBtn')}</button>
+    <p style="margin-top:15px;font-size:14px;color:#666;">${t('share')}</p>
+
+    <!-- Баннер -->
+    <div style="text-align: center; margin-top: 40px;">
+      <div style="position: relative; display: inline-block;">
+        <a href="${url}" target="_blank" style="display: block;">
+          <img src="./create-sock-banner.gif" 
+               alt="Создай свой носок и поздравь меня!" 
+               id="bannerImage"
+               style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer;">
+        </a>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
+          Поздравь меня!
+        </div>
       </div>
-    `;
+
+      <!-- Кнопки -->
+      <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <button id="copyBannerBtn" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          💾 Скопировать ссылку
+        </button>
+        <button id="saveBannerBtn" style="padding: 8px 16px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          🖼️ Сохранить как изображение
+        </button>
+      </div>
+    </div>
+  </div>
+`;
+
+// Кнопка "Скопировать ссылку"
+document.getElementById('copyBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ Ссылка скопирована!');
+  }).catch(err => {
+    alert('Не удалось скопировать');
+  });
+});
+
+// Кнопка "Скопировать ссылку баннера"
+document.getElementById('copyBannerBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ Ссылка на твой носок скопирована!');
+  }).catch(err => {
+    alert('Не удалось скопировать');
+  });
+});
+
+// Кнопка "Сохранить как изображение"
+document.getElementById('saveBannerBtn').addEventListener('click', async () => {
+  const img = document.getElementById('bannerImage');
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Установим размеры холста = размеру изображения
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
+
+  // Нарисуем изображение
+  ctx.drawImage(img, 0, 0);
+
+  // Добавим текст (если нужно)
+  ctx.font = 'bold 24px Arial';
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.fillText('Поздравь меня!', canvas.width / 2, canvas.height / 2);
+
+  // Экспортируем в Blob
+  canvas.toBlob((blob) => {
+    const link = document.createElement('a');
+    link.download = 'my-christmas-sock.png';
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  }, 'image/png');
+});
     
     document.getElementById('copyBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
@@ -776,3 +846,4 @@
 
 </body>
 </html>
+

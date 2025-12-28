@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title id="page-title">Рождественский носок</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+  <link href=" https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;600&display=swap " rel="stylesheet">
   <style>
     :root {
       --main: #e74c3c;
@@ -296,7 +296,7 @@
       border-radius: 3px;
     }
 
-    /* Кнопка — как раньше (без position) */
+    /* Кнопка — без position */
     .create-your-link {
       background: #3498db;
       color: white;
@@ -577,65 +577,12 @@
         <div class="emoji-panel" id="emojiPanel"></div>
       </div>
       <div id="submitBtnContainer"></div>
+      <div id="createYourBlock"></div>
     `;
 
     document.getElementById('app').innerHTML = html;
     initEmojiPanel();
 
-    // Удаляем старую кнопку
-    let createBtn = document.getElementById('createYourBtn');
-    if (createBtn) createBtn.remove();
-
-    // Контейнер: изображение + кнопка
-    const container = document.createElement('div');
-    container.id = 'createYourBtn';
-container.style.cssText = `
-  position: fixed;
-  bottom: max(20px, env(safe-area-inset-bottom, 20px));
-  left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 10;
-  max-width: calc(100% - 40px);
-`;
-
-    // Изображение (можно заменить URL)
-let createBtn = document.getElementById('createYourBtn');
-if (createBtn) createBtn.remove();
-
-const container = document.createElement('div');
-container.id = 'createYourBtn';
-container.style.cssText = `
-  position: fixed;
-  bottom: max(20px, env(safe-area-inset-bottom, 20px));
-  left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 10;
-  max-width: calc(100% - 40px);
-`;
-
-const img = document.createElement('img');
-img.src = './present.gif?' + Math.random();
-img.alt = 'Подарок';
-img.style.width = '60px';
-img.style.height = 'auto';
-img.style.marginBottom = '8px';
-img.style.borderRadius = '8px';
-img.style.maxWidth = '100%'; // ← защищает на узких экранах
-
-const btn = document.createElement('a');
-btn.href = '/';
-btn.className = 'create-your-link';
-btn.textContent = t('createYourSockBtn');
-
-container.appendChild(img);
-container.appendChild(btn);
-document.body.appendChild(container);
-
-    // Блок подарков
     let giftsContainer = document.getElementById('giftsCorner');
     if (giftsContainer) giftsContainer.remove();
     giftsContainer = document.createElement('div');
@@ -647,7 +594,6 @@ document.body.appendChild(container);
     const listEl = giftsContainer.querySelector('.gifts-list');
     loadGifts(id, listEl);
 
-    // Функция обновления счётчика
     async function updateGiftCount() {
       const { count } = await supabaseClient
         .from('gifts')
@@ -680,6 +626,19 @@ document.body.appendChild(container);
       `;
       btn.onclick = () => { submitGift(data.id); };
       btnContainer.appendChild(btn);
+    }
+
+    // === НОВОЕ: блок "Создай свой носок" ПОД формой ===
+    const createBlock = document.getElementById('createYourBlock');
+    if (createBlock) {
+      createBlock.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px; padding-bottom: 30px;">
+          <img src="./present.gif?${Math.random()}" 
+               alt="Подарок" 
+               style="width: 60px; height: auto; margin-bottom: 10px; border-radius: 8px; max-width: 100%;">
+          <a href="/" class="create-your-link">${t('createYourSockBtn')}</a>
+        </div>
+      `;
     }
   }
 
@@ -798,8 +757,6 @@ document.body.appendChild(container);
 
   window.addEventListener('beforeunload', () => {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    const btn = document.getElementById('createYourBtn');
-    if (btn) btn.remove();
     const gifts = document.getElementById('giftsCorner');
     if (gifts) gifts.remove();
   });
@@ -819,10 +776,3 @@ document.body.appendChild(container);
 
 </body>
 </html>
-
-
-
-
-
-
-

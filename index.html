@@ -525,39 +525,70 @@
 
     const url = window.location.origin + '/' + sockId;
 
-    // === Простой баннер для дележа ===
+    // === Обновлённый блок с баннером и кнопками ===
     document.getElementById('app').innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
         <p>${t('successDesc')}</p>
+        
         <div style="text-align: center; margin: 20px 0;">
           <a href="${url}" target="_blank">
             <img src="./create-sock-banner.gif" 
                  alt="Создай свой рождественский носок!" 
+                 id="bannerImage"
                  style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
           </a>
         </div>
 
-        <p style="margin: 15px 0; font-size: 16px; color: #fff;">
-          🎁 Чтобы поделиться — сделай 2 простых шага:
+        <p style="margin: 15px 0; font-size: 16px; color: #fff; line-height: 1.5;">
+          🎁 <strong>Поделись своим носком с друзьями!</strong><br>
+          Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —<br>
+          и все смогут поздравить тебя! 💌
         </p>
-        <ol style="text-align: left; padding: 0 20px; color: #fff; font-size: 15px; line-height: 1.6;">
-          <li>Нажми и удерживай картинку → выбери <strong>«Сохранить изображение»</strong></li>
-          <li>Опубликуй её и добавь ссылку в описание:</li>
-        </ol>
 
-        <div id="sockUrl" style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
-        <button id="copyBtn" style="margin-top:10px;">${t('copyBtn')}</button>
-        <p style="margin-top:15px;font-size:14px;color:#666;">Ссылка ведёт прямо к твоему носку!</p>
+        <div style="margin: 20px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button id="saveImageBtn" style="padding: 10px 16px; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            💾 Сохранить картинку
+          </button>
+          <button id="copyLinkBtn" style="padding: 10px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            🔗 Скопировать ссылку
+          </button>
+          <button id="emailLinkBtn" style="padding: 10px 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            📩 Отправить на почту
+          </button>
+        </div>
+
+        <div id="sockUrl" style="background: white; padding: 10px; border-radius: 8px; margin-top: 10px; word-break: break-all; font-size: 14px; color: #333;">
+          ${url}
+        </div>
       </div>
     `;
 
-    document.getElementById('copyBtn').addEventListener('click', () => {
+    // === Копировать ссылку ===
+    document.getElementById('copyLinkBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
-        alert('✅ Ссылка скопирована! Вставь её в описание к посту.');
-      }).catch(err => {
+        alert('✅ Ссылка скопирована! 💫\n\n👉 Отправь её себе в Telegram, WhatsApp или Notes, чтобы не потерять!');
+      }).catch(() => {
         alert('Не удалось скопировать');
       });
+    });
+
+    // === Сохранить картинку ===
+    document.getElementById('saveImageBtn').addEventListener('click', () => {
+      const img = document.getElementById('bannerImage');
+      const link = document.createElement('a');
+      link.href = img.src;
+      link.download = 'my-christmas-sock-banner.gif';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // === Отправить на почту ===
+    document.getElementById('emailLinkBtn').addEventListener('click', () => {
+      const subject = encodeURIComponent('Мой рождественский носок 🎄');
+      const body = encodeURIComponent(`Привет! Это мой персональный рождественский носок:\n\n${url}\n\nСохрани ссылку и поделись с друзьями! 🎅`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
     });
   }
 

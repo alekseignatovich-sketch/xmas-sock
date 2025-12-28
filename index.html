@@ -525,7 +525,7 @@
 
     const url = window.location.origin + '/' + sockId;
 
-    // === Обновлённый блок с баннером и кнопками ===
+    // === Баннер с видео ===
     document.getElementById('app').innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
@@ -533,22 +533,23 @@
         
         <div style="text-align: center; margin: 20px 0;">
           <a href="${url}" target="_blank">
-            <img src="./create-sock-banner.gif" 
-                 alt="Создай свой рождественский носок!" 
-                 id="bannerImage"
-                 style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+            <video autoplay muted loop playsinline
+                   style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+              <source src="./create-sock-banner.mp4" type="video/mp4">
+              <img src="./create-sock-banner.gif" alt="Создай свой носок!">
+            </video>
           </a>
         </div>
 
         <p style="margin: 15px 0; font-size: 16px; color: #fff; line-height: 1.5;">
           🎁 <strong>Поделись своим носком с друзьями!</strong><br>
-          Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —<br>
+          Сохрани это видео, опубликуй в соцсетях и добавь ссылку —<br>
           и все смогут поздравить тебя! 💌
         </p>
 
         <div style="margin: 20px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <button id="saveImageBtn" style="padding: 10px 16px; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-            💾 Сохранить картинку
+            💾 Скачать видео для соцсетей
           </button>
           <button id="copyLinkBtn" style="padding: 10px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
             🔗 Скопировать ссылку
@@ -564,7 +565,7 @@
       </div>
     `;
 
-    // === Копировать ссылку ===
+    // === Скопировать ссылку ===
     document.getElementById('copyLinkBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Ссылка скопирована! 💫\n\n👉 Отправь её себе в Telegram, WhatsApp или Notes, чтобы не потерять!');
@@ -573,12 +574,11 @@
       });
     });
 
-    // === Сохранить картинку ===
+    // === Скачать видео ===
     document.getElementById('saveImageBtn').addEventListener('click', () => {
-      const img = document.getElementById('bannerImage');
       const link = document.createElement('a');
-      link.href = img.src;
-      link.download = 'my-christmas-sock-banner.gif';
+      link.href = './create-sock-banner.mp4';
+      link.download = 'my-christmas-sock-banner.mp4';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -822,5 +822,3 @@
 
 </body>
 </html>
-
-

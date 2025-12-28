@@ -526,8 +526,8 @@
     }
 
     const url = window.location.origin + '/' + sockId;
-document.getElementById('app').innerHTML = `
-  <div class="success">
+    document.getElementById('app').innerHTML = `
+    <div class="success">
     <h2>${t('successTitle')}</h2>
     <p>${t('successDesc')}</p>
     <div id="sockUrl" style="background:white;padding:12px;border-radius:8px;margin:15px 0;word-break:break-all;">${url}</div>
@@ -559,7 +559,7 @@ document.getElementById('app').innerHTML = `
       </div>
     </div>
   </div>
-`;
+});
 
 // Кнопка "Скопировать ссылку"
 document.getElementById('copyBtn').addEventListener('click', () => {
@@ -838,3 +838,4 @@ document.getElementById('saveBannerBtn').addEventListener('click', async () => {
 
 </body>
 </html>
+

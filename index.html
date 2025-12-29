@@ -453,20 +453,18 @@
       // На странице носка — полная перерисовка
       showPublicSock(id);
     } else {
-      // На главной — обновляем тексты, НЕ стирая данные
-      const header = document.querySelector('.sock-header h1');
-      const desc = document.querySelector('.sock-header p');
-      const idLabel = document.querySelector('.id-hint');
+      // На главной — обновляем ВСЕ переводимые элементы по id
+      const titleEl = document.getElementById('title-create');
+      const descEl = document.getElementById('desc-create');
+      const hintEl = document.getElementById('hint-id');
       const nameInput = document.getElementById('ownerName');
-      const createBtn = document.querySelector('.create-sock-btn');
+      const btnEl = document.getElementById('btn-create');
 
-      if (header) header.textContent = t('titleCreate');
-      if (desc) desc.textContent = t('descCreate');
-      if (idLabel) idLabel.textContent = t('placeholderId');
+      if (titleEl) titleEl.textContent = t('titleCreate');
+      if (descEl) descEl.textContent = t('descCreate');
+      if (hintEl) hintEl.textContent = t('placeholderId');
       if (nameInput) nameInput.placeholder = t('placeholderName');
-      if (createBtn) createBtn.textContent = t('createBtn');
-
-      // ID (sockId) — не трогаем, чтобы не сбросить то, что ввёл пользователь
+      if (btnEl) btnEl.textContent = t('createBtn');
     }
   }
 
@@ -522,19 +520,20 @@
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     const uniqueId = await generateUniqueSockId();
 
+    // === ИСПОЛЬЗУЕМ ID ДЛЯ ЛОКАЛИЗАЦИИ ===
     document.getElementById('app').innerHTML = `
       <div class="sock-header">
-        <h1>${t('titleCreate')}</h1>
-        <p>${t('descCreate')}</p>
+        <h1 id="title-create">${t('titleCreate')}</h1>
+        <p id="desc-create">${t('descCreate')}</p>
       </div>
       <div class="form-group">
         <input id="sockId" value="${escapeHtml(uniqueId)}" />
-        <div class="id-hint">${t('placeholderId')}</div>
+        <div class="id-hint" id="hint-id">${t('placeholderId')}</div>
       </div>
       <div class="form-group">
         <input id="ownerName" placeholder="${t('placeholderName')}" />
       </div>
-      <button class="create-sock-btn" onclick="createSock()">${t('createBtn')}</button>
+      <button class="create-sock-btn" id="btn-create" onclick="createSock()">${t('createBtn')}</button>
     `;
   }
 

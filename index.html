@@ -434,48 +434,39 @@
     '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
   ];
 
+  // === ИСПРАВЛЕННАЯ ФУНКЦИЯ СМЕНЫ ЯЗЫКА ===
   function setLanguage(lang) {
     currentLang = lang;
+
     // Обновляем кнопки переключения
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
+
+    // Обновляем title
     document.getElementById('page-title').textContent = translations[lang].title;
 
-    // Если на странице носка — обновляем тексты без пересоздания
     const path = window.location.pathname;
     const id = path === '/' ? null : path.substring(1);
+
     if (id && id.length > 0) {
-      const header = document.querySelector('.sock-header h2');
-      if (header) {
-        header.textContent = currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок';
-      }
-      const forText = document.querySelector('.sock-header h3');
-      if (forText) {
-        const ownerName = forText.textContent.replace(/^для\s+|^for\s+/, '').trim();
-        forText.textContent = t('for') + ' ' + ownerName;
-      }
-      const leaveGift = document.querySelector('h3 + h3');
-      if (leaveGift) leaveGift.textContent = t('leaveGift');
-      
-      const senderName = document.getElementById('senderName');
-      if (senderName) senderName.placeholder = t('yourName');
-      
-      const message = document.getElementById('message');
-      if (message) message.placeholder = t('messagePlaceholder');
-      
-      const sendBtn = document.querySelector('#submitBtnContainer button');
-      if (sendBtn) sendBtn.textContent = t('sendBtn');
-      
-      const giftsTitle = document.querySelector('#giftsCorner .gifts-title');
-      if (giftsTitle) {
-        giftsTitle.childNodes[0].textContent = t('giftsTitle') + ' ';
-      }
-      
-      const createBtn = document.querySelector('#createYourBlock a');
-      if (createBtn) createBtn.textContent = t('createYourSockBtn');
+      // На странице носка — полная перерисовка
+      showPublicSock(id);
     } else {
-      showCreateForm();
+      // На главной — обновляем тексты, НЕ стирая данные
+      const header = document.querySelector('.sock-header h1');
+      const desc = document.querySelector('.sock-header p');
+      const idLabel = document.querySelector('.id-hint');
+      const nameInput = document.getElementById('ownerName');
+      const createBtn = document.querySelector('.create-sock-btn');
+
+      if (header) header.textContent = t('titleCreate');
+      if (desc) desc.textContent = t('descCreate');
+      if (idLabel) idLabel.textContent = t('placeholderId');
+      if (nameInput) nameInput.placeholder = t('placeholderName');
+      if (createBtn) createBtn.textContent = t('createBtn');
+
+      // ID (sockId) — не трогаем, чтобы не сбросить то, что ввёл пользователь
     }
   }
 

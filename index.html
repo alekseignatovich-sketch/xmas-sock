@@ -79,7 +79,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.3'/%3E%3C/svg%3E");
+      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.3'/%3E%3C/svg%3E");
       background-size: 40px 40px;
       z-index: -1;
     }
@@ -157,7 +157,7 @@
       width: 100%;
       font-size: 16px;
       margin-top: 10px;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
       background-size: 30px 30px;
     }
 
@@ -178,7 +178,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='1.2' fill='white' opacity='0.2'/%3E%3C/svg%3E");
+      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='1.2' fill='white' opacity='0.2'/%3E%3C/svg%3E");
       background-size: 50px 50px;
       z-index: -1;
     }
@@ -323,21 +323,6 @@
       border-radius: 3px;
     }
 
-    .create-your-link {
-      background: #3498db;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      display: inline-block;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
-      background-size: 30px 30px;
-    }
-
     .btn-red {
       padding: 10px 16px;
       background: #e74c3c;
@@ -346,7 +331,7 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
       background-size: 30px 30px;
     }
 
@@ -688,7 +673,6 @@
         <div class="emoji-panel" id="emojiPanel"></div>
       </div>
       <div id="submitBtnContainer"></div>
-      <div id="createYourBlock"></div>
     `;
 
     document.getElementById('app').innerHTML = html;
@@ -731,17 +715,23 @@
       btnContainer.appendChild(btn);
     }
 
-    const createBlock = document.getElementById('createYourBlock');
-    if (createBlock) {
-      createBlock.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px; padding-bottom: 30px;">
-          <img src="./present.gif?${Math.random()}" 
-               alt="Подарок" 
-               style="width: 60px; height: auto; margin-bottom: 10px; border-radius: 8px; max-width: 100%;">
-          <a href="/" class="create-your-link">${t('createYourSockBtn')}</a>
-        </div>
-      `;
-    }
+    // === КНОПКА "Создай свой носок" — В КОНЦЕ КОНТЕНТА (без fixed) ===
+    let oldBlock = document.getElementById('createYourBlock');
+    if (oldBlock) oldBlock.remove();
+
+    const createBlock = document.createElement('div');
+    createBlock.id = 'createYourBlock';
+    createBlock.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; margin-top: 30px; padding-bottom: 50px;">
+        <img src="./present.gif?${Math.random()}" 
+             alt="Подарок" 
+             style="width: 60px; height: auto; margin-bottom: 12px; border-radius: 8px; max-width: 100%;">
+        <a href="/" class="create-your-link" style="background: #3498db; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.2);">
+          ${t('createYourSockBtn')}
+        </a>
+      </div>
+    `;
+    document.getElementById('app').appendChild(createBlock);
   }
 
   function initEmojiPanel() {
@@ -856,12 +846,6 @@
     const listEl = document.querySelector('#giftsCorner .gifts-list');
     if (listEl) loadGifts(sockId, listEl);
   }
-
-  window.addEventListener('beforeunload', () => {
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    const gifts = document.getElementById('giftsCorner');
-    if (gifts) gifts.remove();
-  });
 
   document.addEventListener('DOMContentLoaded', async () => {
     createSnowflakes();

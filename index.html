@@ -235,7 +235,6 @@
       border-radius: 3px;
     }
 
-    /* Блок подарков — НЕ fixed */
     .gifts-container {
       width: 100%;
       max-width: 400px;
@@ -385,7 +384,15 @@
       alertIdFormat: 'ID может содержать только буквы, цифры, _ и -',
       alertError: 'Ошибка! Такой носок уже есть?',
       alertSent: '🎁 Подарок отправлен!',
-      alertSendError: 'Ошибка отправки'
+      alertSendError: 'Ошибка отправки',
+      // Страница успеха
+      saveImageBtnText: 'Скачать картинку',
+      saveVideoBtnText: 'Скачать видео',
+      emailLinkBtnText: 'Отправить на почту',
+      mySockBtnText: 'Мой рождественский носок',
+      shareInstructionLine1: 'Поделись своим носком с друзьями!',
+      shareInstructionLine2: 'Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —',
+      shareInstructionLine3: 'и все смогут поздравить тебя!'
     },
     en: {
       title: 'Christmas Sock',
@@ -412,7 +419,15 @@
       alertIdFormat: 'ID can only contain letters, digits, _ and -',
       alertError: 'Error! Sock already exists?',
       alertSent: '🎁 Gift sent!',
-      alertSendError: 'Send error'
+      alertSendError: 'Send error',
+      // Success page
+      saveImageBtnText: 'Download Image',
+      saveVideoBtnText: 'Download Video',
+      emailLinkBtnText: 'Email Me',
+      mySockBtnText: 'My Christmas Sock',
+      shareInstructionLine1: 'Share your sock with friends!',
+      shareInstructionLine2: 'Save this image, post it on social media and add the link —',
+      shareInstructionLine3: 'and everyone can congratulate you!'
     }
   };
 
@@ -434,26 +449,34 @@
     '🧣', '🧤', '👢', '👒', '👑', '🎭', '🎪', '🎫', '🎲', '♟️', '🎯', '📌', '📍', '💫', '⭐'
   ];
 
-  // === ИСПРАВЛЕННАЯ ФУНКЦИЯ СМЕНЫ ЯЗЫКА ===
   function setLanguage(lang) {
     currentLang = lang;
 
-    // Обновляем кнопки переключения
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
 
-    // Обновляем title
     document.getElementById('page-title').textContent = translations[lang].title;
 
     const path = window.location.pathname;
     const id = path === '/' ? null : path.substring(1);
+    const isSuccessPage = document.getElementById('success-title');
 
     if (id && id.length > 0) {
-      // На странице носка — полная перерисовка
       showPublicSock(id);
+    } else if (isSuccessPage) {
+      // Страница "Готово!" — обновляем тексты
+      document.getElementById('success-title').textContent = t('successTitle');
+      document.getElementById('success-desc').textContent = t('successDesc');
+      document.getElementById('share-instruction').innerHTML = 
+        `🎁 ${t('shareInstructionLine1')}<br>${t('shareInstructionLine2')}<br>${t('shareInstructionLine3')} 💌`;
+      document.getElementById('saveImageBtn').textContent = `💾 ${t('saveImageBtnText')}`;
+      document.getElementById('saveVideoBtn').textContent = `🎥 ${t('saveVideoBtnText')}`;
+      document.getElementById('copyLinkBtn').textContent = `🔗 ${t('copyBtn')}`;
+      document.getElementById('emailLinkBtn').textContent = `📩 ${t('emailLinkBtnText')}`;
+      document.getElementById('my-sock-btn').textContent = `🎄 ${t('mySockBtnText')}`;
     } else {
-      // На главной — обновляем ВСЕ переводимые элементы по id
+      // Главная
       const titleEl = document.getElementById('title-create');
       const descEl = document.getElementById('desc-create');
       const hintEl = document.getElementById('hint-id');
@@ -520,7 +543,6 @@
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     const uniqueId = await generateUniqueSockId();
 
-    // === ИСПОЛЬЗУЕМ ID ДЛЯ ЛОКАЛИЗАЦИИ ===
     document.getElementById('app').innerHTML = `
       <div class="sock-header">
         <h1 id="title-create">${t('titleCreate')}</h1>
@@ -569,8 +591,8 @@
 
     document.getElementById('app').innerHTML = `
       <div class="success">
-        <h2>${t('successTitle')}</h2>
-        <p>${t('successDesc')}</p>
+        <h2 id="success-title">${t('successTitle')}</h2>
+        <p id="success-desc">${t('successDesc')}</p>
         
         <div style="text-align: center; margin: 20px 0;">
           <a href="${url}" target="_blank">
@@ -581,24 +603,24 @@
           </a>
         </div>
 
-        <p style="margin: 15px 0; font-size: 16px; color: #000; line-height: 1.5; font-weight: bold;">
-          🎁 Поделись своим носком с друзьями!<br>
-          Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —<br>
-          и все смогут поздравить тебя! 💌
+        <p id="share-instruction" style="margin: 15px 0; font-size: 16px; color: #000; line-height: 1.5; font-weight: bold;">
+          🎁 ${t('shareInstructionLine1')}<br>
+          ${t('shareInstructionLine2')}<br>
+          ${t('shareInstructionLine3')} 💌
         </p>
 
         <div style="margin: 20px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <button id="saveImageBtn" class="btn-red">
-            💾 Скачать картинку
+            💾 ${t('saveImageBtnText')}
           </button>
           <button id="saveVideoBtn" class="btn-red">
-            🎥 Скачать видео
+            🎥 ${t('saveVideoBtnText')}
           </button>
           <button id="copyLinkBtn" class="btn-red">
-            🔗 Скопировать ссылку
+            🔗 ${t('copyBtn')}
           </button>
           <button id="emailLinkBtn" class="btn-red">
-            📩 Отправить на почту
+            📩 ${t('emailLinkBtnText')}
           </button>
         </div>
 
@@ -607,13 +629,14 @@
         </div>
 
         <div style="margin-top: 30px; text-align: center;">
-          <a href="${url}" target="_blank" class="btn-red" style="display: inline-block; text-decoration: none; padding: 12px 24px;">
-            🎄 Мой рождественский носок
+          <a href="${url}" target="_blank" class="btn-red" id="my-sock-btn" style="display: inline-block; text-decoration: none; padding: 12px 24px;">
+            🎄 ${t('mySockBtnText')}
           </a>
         </div>
       </div>
     `;
 
+    // Обработчики кнопок (без изменений)
     document.getElementById('saveImageBtn').addEventListener('click', () => {
       const link = document.createElement('a');
       link.href = './create-sock-banner.gif';
@@ -650,6 +673,8 @@
     });
   }
 
+  // ... остальной код (showPublicSock, initEmojiPanel, submitGift и т.д.) без изменений
+
   async function showPublicSock(id) {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
 
@@ -683,7 +708,6 @@
       </div>
       <div id="submitBtnContainer"></div>
 
-      <!-- Блок подарков — ВНУТРИ КОНТЕНТА -->
       <div class="gifts-container" id="giftsCorner">
         <div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div>
         <div class="gifts-list"><p class="no-gifts">${t('noGifts')}</p></div>
@@ -722,7 +746,6 @@
       btnContainer.appendChild(btn);
     }
 
-    // Кнопка "Создай свой носок" — в самом низу контента
     let oldBlock = document.getElementById('createYourBlock');
     if (oldBlock) oldBlock.remove();
 

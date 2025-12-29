@@ -72,18 +72,6 @@
       }
     }
 
-    /* Снежинки как орнамент */
-    .snowflake-ornament {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.3'/%3E%3C/svg%3E");
-      background-size: 40px 40px;
-      z-index: -1;
-    }
-
     .container {
       max-width: 600px;
       margin: 0 auto;
@@ -247,23 +235,22 @@
       border-radius: 3px;
     }
 
+    /* Блок подарков — НЕ fixed */
     .gifts-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 70%;
+      width: 100%;
       max-width: 400px;
-      height: 165px;
+      height: auto;
+      min-height: 120px;
       background: rgba(255, 255, 255, 0.94);
       border-radius: 12px;
       padding: 12px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      z-index: 10;
       backdrop-filter: blur(5px);
       border: 1px solid rgba(231, 76, 60, 0.2);
       display: flex;
       flex-direction: column;
       font-size: 0.95em;
+      margin: 20px auto;
     }
 
     .gifts-title {
@@ -279,6 +266,7 @@
       flex: 1;
       overflow-y: auto;
       padding-right: 5px;
+      max-height: 300px;
     }
 
     .gift-item {
@@ -335,14 +323,21 @@
       background-size: 30px 30px;
     }
 
+    .create-your-link {
+      background: #3498db;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      background-image: url("image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
+    }
+
     @media (max-width: 600px) {
-      .gifts-container {
-        bottom: 10px;
-        right: 10px;
-        left: 10px;
-        width: calc(100% - 20px);
-        height: 150px;
-      }
       .lang-switcher {
         top: 10px;
         right: 10px;
@@ -441,15 +436,44 @@
 
   function setLanguage(lang) {
     currentLang = lang;
+    // Обновляем кнопки переключения
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
     document.getElementById('page-title').textContent = translations[lang].title;
-    
+
+    // Если на странице носка — обновляем тексты без пересоздания
     const path = window.location.pathname;
     const id = path === '/' ? null : path.substring(1);
     if (id && id.length > 0) {
-      showPublicSock(id);
+      const header = document.querySelector('.sock-header h2');
+      if (header) {
+        header.textContent = currentLang === 'en' ? 'Christmas Sock' : 'Рождественский носок';
+      }
+      const forText = document.querySelector('.sock-header h3');
+      if (forText) {
+        const ownerName = forText.textContent.replace(/^для\s+|^for\s+/, '').trim();
+        forText.textContent = t('for') + ' ' + ownerName;
+      }
+      const leaveGift = document.querySelector('h3 + h3');
+      if (leaveGift) leaveGift.textContent = t('leaveGift');
+      
+      const senderName = document.getElementById('senderName');
+      if (senderName) senderName.placeholder = t('yourName');
+      
+      const message = document.getElementById('message');
+      if (message) message.placeholder = t('messagePlaceholder');
+      
+      const sendBtn = document.querySelector('#submitBtnContainer button');
+      if (sendBtn) sendBtn.textContent = t('sendBtn');
+      
+      const giftsTitle = document.querySelector('#giftsCorner .gifts-title');
+      if (giftsTitle) {
+        giftsTitle.childNodes[0].textContent = t('giftsTitle') + ' ';
+      }
+      
+      const createBtn = document.querySelector('#createYourBlock a');
+      if (createBtn) createBtn.textContent = t('createYourSockBtn');
     } else {
       showCreateForm();
     }
@@ -592,7 +616,6 @@
           ${url}
         </div>
 
-        <!-- Кнопка "Мой носок" ВСАМЫЙ НИЗ -->
         <div style="margin-top: 30px; text-align: center;">
           <a href="${url}" target="_blank" class="btn-red" style="display: inline-block; text-decoration: none; padding: 12px 24px;">
             🎄 Мой рождественский носок
@@ -601,7 +624,6 @@
       </div>
     `;
 
-    // Скачать картинку
     document.getElementById('saveImageBtn').addEventListener('click', () => {
       const link = document.createElement('a');
       link.href = './create-sock-banner.gif';
@@ -609,7 +631,6 @@
       link.click();
     });
 
-    // Скачать видео
     document.getElementById('saveVideoBtn').addEventListener('click', () => {
       const link = document.createElement('a');
       link.href = videoUrl;
@@ -617,7 +638,6 @@
       link.click();
     });
 
-    // Скопировать ссылку
     document.getElementById('copyLinkBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
         alert('✅ Ссылка скопирована!\n\n👉 Отправь её себе в мессенджер, чтобы не потерять!');
@@ -626,7 +646,6 @@
       });
     });
 
-    // Отправить на почту (только ссылка на носок)
     document.getElementById('emailLinkBtn').addEventListener('click', () => {
       const subject = encodeURIComponent('Мой рождественский носок 🎄');
       const body = encodeURIComponent(
@@ -673,20 +692,18 @@
         <div class="emoji-panel" id="emojiPanel"></div>
       </div>
       <div id="submitBtnContainer"></div>
+
+      <!-- Блок подарков — ВНУТРИ КОНТЕНТА -->
+      <div class="gifts-container" id="giftsCorner">
+        <div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div>
+        <div class="gifts-list"><p class="no-gifts">${t('noGifts')}</p></div>
+      </div>
     `;
 
     document.getElementById('app').innerHTML = html;
     initEmojiPanel();
 
-    let giftsContainer = document.getElementById('giftsCorner');
-    if (giftsContainer) giftsContainer.remove();
-    giftsContainer = document.createElement('div');
-    giftsContainer.id = 'giftsCorner';
-    giftsContainer.className = 'gifts-container';
-    giftsContainer.innerHTML = `<div class="gifts-title">${t('giftsTitle')} <span id="giftsCount">0</span></div><div class="gifts-list"></div>`;
-    document.body.appendChild(giftsContainer);
-
-    const listEl = giftsContainer.querySelector('.gifts-list');
+    const listEl = document.getElementById('giftsCorner').querySelector('.gifts-list');
     loadGifts(id, listEl);
 
     async function updateGiftCount() {
@@ -715,7 +732,7 @@
       btnContainer.appendChild(btn);
     }
 
-    // === КНОПКА "Создай свой носок" — В КОНЦЕ КОНТЕНТА (без fixed) ===
+    // Кнопка "Создай свой носок" — в самом низу контента
     let oldBlock = document.getElementById('createYourBlock');
     if (oldBlock) oldBlock.remove();
 
@@ -726,7 +743,7 @@
         <img src="./present.gif?${Math.random()}" 
              alt="Подарок" 
              style="width: 60px; height: auto; margin-bottom: 12px; border-radius: 8px; max-width: 100%;">
-        <a href="/" class="create-your-link" style="background: #3498db; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.2);">
+        <a href="/" class="create-your-link">
           ${t('createYourSockBtn')}
         </a>
       </div>

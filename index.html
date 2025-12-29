@@ -72,6 +72,18 @@
       }
     }
 
+    /* Снежинки как орнамент */
+    .snowflake-ornament {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.3'/%3E%3C/svg%3E");
+      background-size: 40px 40px;
+      z-index: -1;
+    }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
@@ -145,6 +157,8 @@
       width: 100%;
       font-size: 16px;
       margin-top: 10px;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
     }
 
     .success {
@@ -153,6 +167,20 @@
       border-radius: 10px;
       margin: 20px 0;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .success::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='1.2' fill='white' opacity='0.2'/%3E%3C/svg%3E");
+      background-size: 50px 50px;
+      z-index: -1;
     }
 
     .emoji-toggle {
@@ -306,6 +334,20 @@
       display: inline-block;
       text-align: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
+    }
+
+    .btn-red {
+      padding: 10px 16px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='3' cy='3' r='0.8' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
     }
 
     @media (max-width: 600px) {
@@ -524,8 +566,7 @@
     }
 
     const url = window.location.origin + '/' + sockId;
-    const imageUrl = window.location.origin + '/create-sock-banner.gif';
-    const videoUrl = window.location.origin + '/my-christmas-video.mp4'; // ← убедись, что файл существует
+    const videoUrl = window.location.origin + '/my-christmas-video.mp4';
 
     document.getElementById('app').innerHTML = `
       <div class="success">
@@ -534,45 +575,30 @@
         
         <div style="text-align: center; margin: 20px 0;">
           <a href="${url}" target="_blank">
-            <img src="${imageUrl}" 
+            <img src="./create-sock-banner.gif" 
                  alt="Создай свой рождественский носок!" 
                  id="bannerImage"
                  style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
           </a>
         </div>
 
-        <p style="margin: 15px 0; font-size: 16px; color: #fff; line-height: 1.5;">
-          🎁 <strong>Поделись своим носком с друзьями!</strong><br>
+        <p style="margin: 15px 0; font-size: 16px; color: #000; line-height: 1.5; font-weight: bold;">
+          🎁 Поделись своим носком с друзьями!<br>
           Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —<br>
           и все смогут поздравить тебя! 💌
         </p>
 
-        <!-- Кнопка "Мой носок" -->
-        <div style="margin: 20px 0; text-align: center;">
-          <a href="${url}" target="_blank" style="
-            display: inline-block;
-            padding: 12px 24px;
-            background: #e74c3c;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-          ">
-            🎄 Мой рождественский носок
-          </a>
-        </div>
-
-        <!-- Кнопки -->
         <div style="margin: 20px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button id="saveImageBtn" style="padding: 10px 16px; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+          <button id="saveImageBtn" class="btn-red">
             💾 Скачать картинку
           </button>
-          <button id="copyLinkBtn" style="padding: 10px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+          <button id="saveVideoBtn" class="btn-red">
+            🎥 Скачать видео
+          </button>
+          <button id="copyLinkBtn" class="btn-red">
             🔗 Скопировать ссылку
           </button>
-          <button id="emailLinkBtn" style="padding: 10px 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+          <button id="emailLinkBtn" class="btn-red">
             📩 Отправить на почту
           </button>
         </div>
@@ -580,45 +606,52 @@
         <div id="sockUrl" style="background: white; padding: 10px; border-radius: 8px; margin-top: 10px; word-break: break-all; font-size: 14px; color: #333;">
           ${url}
         </div>
+
+        <!-- Кнопка "Мой носок" ВСАМЫЙ НИЗ -->
+        <div style="margin-top: 30px; text-align: center;">
+          <a href="${url}" target="_blank" class="btn-red" style="display: inline-block; text-decoration: none; padding: 12px 24px;">
+            🎄 Мой рождественский носок
+          </a>
+        </div>
       </div>
     `;
 
-    // === Скачать картинку ===
+    // Скачать картинку
     document.getElementById('saveImageBtn').addEventListener('click', () => {
       const link = document.createElement('a');
-      link.href = imageUrl;
+      link.href = './create-sock-banner.gif';
       link.download = 'my-christmas-sock-banner.gif';
       link.click();
     });
 
-    // === Скопировать ссылку ===
+    // Скачать видео
+    document.getElementById('saveVideoBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = videoUrl;
+      link.download = 'my-christmas-sock-video.mp4';
+      link.click();
+    });
+
+    // Скопировать ссылку
     document.getElementById('copyLinkBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
-        alert('✅ Ссылка скопирована!\n\n👉 Отправь её себе в Telegram или WhatsApp, чтобы не потерять!');
+        alert('✅ Ссылка скопирована!\n\n👉 Отправь её себе в мессенджер, чтобы не потерять!');
       }).catch(() => {
         alert('Не удалось скопировать');
       });
     });
 
-    // === Отправить на почту ===
+    // Отправить на почту (только ссылка на носок)
     document.getElementById('emailLinkBtn').addEventListener('click', () => {
       const subject = encodeURIComponent('Мой рождественский носок 🎄');
       const body = encodeURIComponent(
-        `Привет! Это мой персональный рождественский носок 🎅\n\n` +
-        `🔗 Ссылка: ${url}\n\n` +
-        `🖼️ Картинка: ${imageUrl}\n\n` +
-        `🎥 Видео: ${videoUrl}\n\n` +
-        `Сохрани всё и поделись с друзьями!`
+        `Привет! Это мой персональный рождественский носок 🎅\n\nСсылка: ${url}\n\nСохрани и поделись!`
       );
       window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
       
-      // Подсказка через 2 сек, если почта не открылась
       setTimeout(() => {
         if (!document.hasFocus()) return;
-        alert('📧 Если почта не открылась:\n' +
-              '1. Скопируй ссылку\n' +
-              '2. Сохрани картинку и видео вручную\n' +
-              '3. Или отправь себе в мессенджер!');
+        alert('📧 Если почта не открылась — просто скопируй ссылку и отправь себе в Telegram/WhatsApp!');
       }, 2000);
     });
   }
@@ -691,17 +724,9 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = t('sendBtn');
-      btn.style.cssText = `
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: #e74c3c;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        margin: 10px 0;
-      `;
+      btn.className = 'btn-red';
+      btn.style.width = '100%';
+      btn.style.margin = '10px 0';
       btn.onclick = () => { submitGift(data.id); };
       btnContainer.appendChild(btn);
     }

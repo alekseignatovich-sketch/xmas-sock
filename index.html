@@ -524,8 +524,9 @@
     }
 
     const url = window.location.origin + '/' + sockId;
+    const imageUrl = window.location.origin + '/create-sock-banner.gif';
+    const videoUrl = window.location.origin + '/my-christmas-video.mp4'; // ← убедись, что файл существует
 
-    // === Баннер с видео ===
     document.getElementById('app').innerHTML = `
       <div class="success">
         <h2>${t('successTitle')}</h2>
@@ -533,23 +534,40 @@
         
         <div style="text-align: center; margin: 20px 0;">
           <a href="${url}" target="_blank">
-            <video autoplay muted loop playsinline
-                   style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-              <source src="./create-sock-banner.mp4" type="video/mp4">
-              <img src="./create-sock-banner.gif" alt="Создай свой носок!">
-            </video>
+            <img src="${imageUrl}" 
+                 alt="Создай свой рождественский носок!" 
+                 id="bannerImage"
+                 style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
           </a>
         </div>
 
         <p style="margin: 15px 0; font-size: 16px; color: #fff; line-height: 1.5;">
           🎁 <strong>Поделись своим носком с друзьями!</strong><br>
-          Сохрани это видео, опубликуй в соцсетях и добавь ссылку —<br>
+          Сохрани эту картинку, опубликуй в соцсетях и добавь ссылку —<br>
           и все смогут поздравить тебя! 💌
         </p>
 
+        <!-- Кнопка "Мой носок" -->
+        <div style="margin: 20px 0; text-align: center;">
+          <a href="${url}" target="_blank" style="
+            display: inline-block;
+            padding: 12px 24px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          ">
+            🎄 Мой рождественский носок
+          </a>
+        </div>
+
+        <!-- Кнопки -->
         <div style="margin: 20px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
           <button id="saveImageBtn" style="padding: 10px 16px; background: #2ecc71; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-            💾 Скачать видео для соцсетей
+            💾 Скачать картинку
           </button>
           <button id="copyLinkBtn" style="padding: 10px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
             🔗 Скопировать ссылку
@@ -565,30 +583,43 @@
       </div>
     `;
 
+    // === Скачать картинку ===
+    document.getElementById('saveImageBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = imageUrl;
+      link.download = 'my-christmas-sock-banner.gif';
+      link.click();
+    });
+
     // === Скопировать ссылку ===
     document.getElementById('copyLinkBtn').addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(() => {
-        alert('✅ Ссылка скопирована! 💫\n\n👉 Отправь её себе в Telegram, WhatsApp или Notes, чтобы не потерять!');
+        alert('✅ Ссылка скопирована!\n\n👉 Отправь её себе в Telegram или WhatsApp, чтобы не потерять!');
       }).catch(() => {
         alert('Не удалось скопировать');
       });
     });
 
-    // === Скачать видео ===
-    document.getElementById('saveImageBtn').addEventListener('click', () => {
-      const link = document.createElement('a');
-      link.href = './create-sock-banner.mp4';
-      link.download = 'my-christmas-sock-banner.mp4';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-
     // === Отправить на почту ===
     document.getElementById('emailLinkBtn').addEventListener('click', () => {
       const subject = encodeURIComponent('Мой рождественский носок 🎄');
-      const body = encodeURIComponent(`Привет! Это мой персональный рождественский носок:\n\n${url}\n\nСохрани ссылку и поделись с друзьями! 🎅`);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      const body = encodeURIComponent(
+        `Привет! Это мой персональный рождественский носок 🎅\n\n` +
+        `🔗 Ссылка: ${url}\n\n` +
+        `🖼️ Картинка: ${imageUrl}\n\n` +
+        `🎥 Видео: ${videoUrl}\n\n` +
+        `Сохрани всё и поделись с друзьями!`
+      );
+      window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+      
+      // Подсказка через 2 сек, если почта не открылась
+      setTimeout(() => {
+        if (!document.hasFocus()) return;
+        alert('📧 Если почта не открылась:\n' +
+              '1. Скопируй ссылку\n' +
+              '2. Сохрани картинку и видео вручную\n' +
+              '3. Или отправь себе в мессенджер!');
+      }, 2000);
     });
   }
 
